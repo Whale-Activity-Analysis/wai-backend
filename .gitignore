@@ -17,9 +17,6 @@ ENV/
 *.swo
 *~
 
-# Environment
-.env
-
 # Git
 .git
 .gitignore
