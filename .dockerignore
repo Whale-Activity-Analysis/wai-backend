@@ -24,9 +24,19 @@ ENV/
 .git
 .gitignore
 
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
 # Documentation
 README.md
 *.md
+
+# Maven/Java (alte Dateien)
+pom.xml
+target/
+*.jar
 
 # OS
 .DS_Store
