@@ -50,8 +50,36 @@ pip install -r requirements.txt
 
 ## Server starten
 
+### Option 1: Lokal mit Python
+
 ```bash
 python main.py
+```
+
+### Option 2: Mit Docker (Empfohlen)
+
+```bash
+# Mit Docker Compose
+docker-compose up -d
+
+# Oder nur Docker
+docker build -t wai-backend .
+docker run -p 8000:8000 wai-backend
+```
+
+**Docker-Befehle:**
+```bash
+# Logs anzeigen
+docker-compose logs -f
+
+# Status prüfen
+docker-compose ps
+
+# Stoppen
+docker-compose down
+
+# Neu bauen & starten
+docker-compose up -d --build
 ```
 
 Der Server läuft dann auf: `http://localhost:8000`
