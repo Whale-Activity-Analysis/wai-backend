@@ -91,21 +91,6 @@ GET /api/wai/statistics
 GET /api/wai/formula
 ```
 
-## Beispiel-Response
-
-```json
-{
-  "date": "2024-12-17",
-  "wai": 1.2345,
-  "normalized_transaction_count": 1.15,
-  "normalized_volume": 1.32,
-  "transaction_count": 450,
-  "total_volume": 125000000.00,
-  "sma_transaction_count": 391.23,
-  "sma_volume": 94696969.70
-}
-```
-
 ## Datenquelle
 
 Die täglichen Metriken werden von folgendem Repository abgerufen:
@@ -133,32 +118,9 @@ Der Server startet standardmäßig im Development-Modus mit Auto-Reload. Bei Än
 pytest
 ```
 
-## Lizenz
-
-MIT
-
 ## Features
 - Whale Activity Score Endpunkte
 - Historische Zeitserien (aus der Datenbank)
 - Auth (später)
 - Endpunkte für Collector-Uploads
 - Validation, Caching, Logging
-
-## Tech Stack
-- NestJS
-- Node.js
-- PostgreSQL
-- Redis (optional)
-- Prisma oder MikroORM (empfohlen)
-
-## Entwicklung
-npm install  
-npm run start:dev
-
-## ENV Variablen
-DATABASE_URL=postgresql://user:pass@localhost:5432/wai
-REDIS_URL=redis://localhost:6379
-PORT=3000
-
-## Migrationen (Prisma)
-npx prisma migrate dev
