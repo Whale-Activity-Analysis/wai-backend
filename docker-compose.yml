@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   wai-backend:
     build: .
@@ -7,14 +5,12 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - HOST=0.0.0.0
-      - PORT=8000
-      - DEBUG=True
-      - SMA_WINDOW=30
-      - WAI_MIN=0
-      - WAI_MAX=100
-    env_file:
-      - .env
+      - HOST=${HOST:-0.0.0.0}
+      - PORT=${PORT:-8000}
+      - DEBUG=${DEBUG:-False}
+      - SMA_WINDOW=${SMA_WINDOW:-30}
+      - WAI_MIN=${WAI_MIN:-0}
+      - WAI_MAX=${WAI_MAX:-100}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/health')"]
