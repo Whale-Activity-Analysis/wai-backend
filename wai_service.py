@@ -163,10 +163,45 @@ class WAIService:
         weight_tx = 1.0 - vol_std_percentile
         
         return weight_tx, weight_volume
+
+    def calculate_wai_v1(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Berechnet den ursprünglichen WAI v1 mit statischen 50/50-Gewichten
+        und historisch adaptiver Percentile-Skalierung auf 0-100 (180 Tage).
+        """
+        result = df.copy()
+        result['baseline_tx'] = self.calculate_sma(result['whale_tx_count'], self.SMA_WINDOW)
+        result['baseline_vol'] = self.calculate_sma(result['whale_tx_volume_btc'], self.SMA_WINDOW)
+        result['norm_tx'] = result['whale_tx_count'] / result['baseline_tx']
+        result['norm_vol'] = result['whale_tx_volume_btc'] / result['baseline_vol']
+        result['wai_v1_raw'] = 0.5 * result['norm_tx'] + 0.5 * result['norm_vol']
+        result['wai_v1_percentile'] = self.calculate_percentile_rank(
+            result['wai_v1_raw'], window=180
+        )
+        result['wai_v1'] = (result['wai_v1_percentile'] * 100).round()
+        result['wai_v1'] = result['wai_v1'].fillna(0)
+        return result
     
     def calculate_wai(self, df: pd.DataFrame) -> pd.DataFrame:
         """
-        Berechnet den WAI mit volatilit\u00e4tsabh\u00e4ngigen Gewichten:\n        \n        1. Normalisierung durch adaptive Basislinie (SMA/EWMA/Median):\n           T\u0302_d = T_d / Baseline_30(T)\n           V\u0302_d = V_d / Baseline_30(V)\n        \n        2. Volatilit\u00e4tsabh\u00e4ngige Gewichtung:\n           weight_vol = PercentileRank(std(V\u0302), window=30)\n           weight_tx = 1 - weight_vol\n        \n        3. Gewichtete WAI-Berechnung:\n           WAI_raw = weight_tx \u00d7 T\u0302_d + weight_vol \u00d7 V\u0302_d\n        \n        4. Historisch adaptive Skalierung (180-Tage-Fenster):\n           WAI_percentile = PercentileRank(WAI_raw, window=180)\n           WAI_index = round(WAI_percentile \u00d7 100)\n        \"\"\"
+        Berechnet den WAI mit volatilitätsabhängigen Gewichten.
+        
+        Schritte:
+        1. Normalisierung durch adaptive Basislinie (SMA/EWMA/Median):
+           - T_hat = T_d / Baseline_30(T)
+           - V_hat = V_d / Baseline_30(V)
+        
+        2. Volatilitätsabhängige Gewichtung:
+           - weight_vol = PercentileRank(std(V_hat), window=30)
+           - weight_tx = 1 - weight_vol
+        
+        3. Gewichtete WAI-Berechnung:
+           - WAI_raw = weight_tx * T_hat + weight_vol * V_hat
+        
+        4. Historisch adaptive Skalierung (180-Tage-Fenster):
+           - WAI_percentile = PercentileRank(WAI_raw, window=180)
+           - WAI_index = round(WAI_percentile * 100)
+        """
         # Kopie erstellen
         result = df.copy()
         
@@ -238,8 +273,10 @@ class WAIService:
         # Daten laden
         df = await self.fetch_daily_metrics()
         
-        # WAI berechnen
+        # WAI v2 und v1 berechnen
         df_with_wai = self.calculate_wai(df)
+        df_v1 = self.calculate_wai_v1(df)
+        df_with_wai['wai_v1'] = df_v1['wai_v1']
         
         # Filtern nach Datumsbereich
         if start_date:
@@ -267,6 +304,7 @@ class WAIService:
                 'normalized_volume': round(float(row['normalized_volume']), 4),
                 'weight_tx': round(float(row['weight_tx']), 4),
                 'weight_volume': round(float(row['weight_volume']), 4),
+                'wai_index_v1': int(round(float(row['wai_v1']))),
                 'whale_tx_count': int(row['whale_tx_count']),
                 'whale_tx_volume_btc': round(float(row['whale_tx_volume_btc']), 2),
                 'sma_transaction_count': round(float(row['sma_transaction_count']), 2),

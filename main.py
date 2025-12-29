@@ -64,10 +64,10 @@ async def health_check():
 @app.get("/api/wai/latest")
 async def get_latest_wai():
     """
-    Gibt den aktuellsten WAI-Wert zurück
+    Gibt den aktuellsten WAI-Wert zurück (v2) und den historischen v1-Vergleich.
     
     Returns:
-        Dictionary mit dem neuesten WAI-Wert und allen Metriken
+        Dictionary mit dem neuesten WAI-Wert, v1-Vergleich und allen Metriken
     """
     try:
         result = await wai_service.get_latest_wai()
@@ -83,7 +83,7 @@ async def get_wai_history(
     limit: Optional[int] = Query(None, ge=1, le=1000, description="Max. Anzahl Ergebnisse (1-1000)")
 ):
     """
-    Gibt WAI-Historie für einen Zeitraum zurück
+    Gibt WAI-Historie für einen Zeitraum zurück (v2) plus v1-Vergleichswerte.
     
     Query Parameters:
         - start_date: Startdatum im Format YYYY-MM-DD
@@ -91,7 +91,7 @@ async def get_wai_history(
         - limit: Maximale Anzahl der Ergebnisse (neueste zuerst)
     
     Returns:
-        Liste mit WAI-Berechnungen
+        Liste mit WAI-Berechnungen inkl. `wai_index` (v2) und `wai_index_v1` (linear 50/50)
     """
     try:
         # Datumsvalidierung
