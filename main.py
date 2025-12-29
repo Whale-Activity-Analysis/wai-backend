@@ -171,31 +171,49 @@ async def get_formula_info():
     Returns:
         Dictionary mit Formelbeschreibung und Parametern
     """
+    baseline_type = config.USE_ROBUST_BASELINE.upper()
+    
+    baseline_formulas = {
+        "SMA": "T̂_d / SMA_30(T), V̂_d / SMA_30(V) - Standard Simple Moving Average",
+        "EWMA": "T̂_d / EWMA_30(T), V̂_d / EWMA_30(V) - Exponentially Weighted (robust gegen Ausreißer)",
+        "MEDIAN": "T̂_d / Median_30(T), V̂_d / Median_30(V) - Rolling Median (robust gegen Extremwerte)"
+    }
+    
     return {
         "version": "0.1",
-        "description": "Whale Activity Index - Minimale Version",
+        "description": "Whale Activity Index - Adaptive Skalierung mit robuster Baseline",
         "formula": {
             "normalization": {
-                "T_normalized": "T_d / SMA_30(T)",
-                "V_normalized": "V_d / SMA_30(V)",
-                "description": "Normalisierung durch 30-Tage gleitenden Durchschnitt"
+                "baseline_type": baseline_type,
+                "T_normalized": baseline_formulas.get(baseline_type, baseline_formulas["SMA"]),
+                "V_normalized": "Analog zu Transaction Count",
+                "description": f"Normalisierung durch {baseline_type} Basislinie (180-Tage Percentile-Fenster)"
             },
             "wai_calculation": {
-                "formula": "WAI_d = (0.5 · T̂_d + 0.5 · V̂_d) × 100",
+                "formula": "WAI_raw = 0.5 · T̂_d + 0.5 · V̂_d",
                 "weights": {
                     "transaction_count": 0.5,
                     "volume": 0.5
                 },
-                "description": "Gleichgewichtete Kombination von normalisierten Transaktionen und Volumen, skaliert auf 0-100"
+                "description": "Gleichgewichtete Kombination von normalisierten Transaktionen und Volumen"
             },
-            "constraints": {
+            "percentile_scaling": {
+                "formula": "WAI_percentile = PercentileRank(WAI_raw, window=180 Tage)",
+                "range": "[0, 1]",
+                "description": "Historisch adaptive Skalierung basierend auf 180-Tage-Fenster"
+            },
+            "final_output": {
+                "formula": "WAI_index = round(WAI_percentile × 100)",
                 "range": "[0, 100]",
-                "description": "WAI-Wert wird auf den Bereich 0 bis 100 begrenzt"
+                "description": "Gerundeter Indexwert ohne harte Grenzen"
             }
         },
         "parameters": {
-            "SMA_window": 30,
-            "data_source": "https://raw.githubusercontent.com/Whale-Activity-Analysis/wai-collector/refs/heads/main/data/daily_metrics.json"
+            "SMA_window": config.SMA_WINDOW,
+            "baseline_method": config.USE_ROBUST_BASELINE,
+            "ewma_span": config.EWMA_SPAN,
+            "percentile_window": 180,
+            "data_source": config.DATA_URL
         },
         "interpretation": {
             "very_low": "0-25: Sehr niedrige Whale-Aktivität",
@@ -204,6 +222,29 @@ async def get_formula_info():
             "high": "75-100: Überdurchschnittliche bis sehr hohe Whale-Aktivität"
         }
     }
+
+
+@app.get("/api/wai/comparison")
+async def get_wai_comparison():
+    """
+    Vergleicht den alten WAI-Index (linear, 50/50) mit dem neuen WAI-Index v2 (percentile, dynamisch).
+    
+    Analyse umfasst:
+    - Statistische Vergleiche (Mean, Median, Std, Min, Max)
+    - Häufigkeit von Index = 100
+    - Histogramm-Verteilung (5er-Buckets)
+    - Sensitivität in Hochaktivitätsphasen (> 75)
+    - Dynamische Gewichts-Analyse
+    - Key Findings
+    
+    Returns:
+        JSON-Summary mit detaillierten Vergleichsmetriken
+    """
+    try:
+        result = await wai_service.calculate_wai_comparison()
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Fehler beim Vergleich: {str(e)}")
 
 
 # Hauptfunktion zum Starten des Servers
