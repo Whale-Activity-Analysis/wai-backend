@@ -21,10 +21,6 @@ ENV/
 .git
 .gitignore
 
-# Documentation
-README.md
-*.md
-
 # OS
 .DS_Store
 Thumbs.db
