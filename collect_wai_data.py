@@ -16,7 +16,17 @@ def fetch_wai_history(api_url: str) -> list:
     try:
         response = httpx.get(f"{api_url}/api/wai/history", timeout=60.0)
         response.raise_for_status()
-        return response.json()
+        result = response.json()
+        print(response.json())
+        
+        # Handle different response structures
+        if isinstance(result, dict) and 'data' in result:
+            return result['data']
+        elif isinstance(result, list):
+            return result
+        else:
+            print(f"Unexpected response format: {type(result)}", file=sys.stderr)
+            sys.exit(1)
     except Exception as e:
         print(f"Error fetching data: {e}", file=sys.stderr)
         sys.exit(1)
@@ -41,11 +51,18 @@ def save_csv(data: list, filepath: str):
     # Get all possible fields from the data
     fieldnames = set()
     for record in data:
+        if not isinstance(record, dict):
+            print(f"Warning: Skipping non-dict record: {type(record)}", file=sys.stderr)
+            continue
         fieldnames.update(record.keys())
         # Flatten metadata if present
         if 'metadata' in record and isinstance(record['metadata'], dict):
             for key in record['metadata'].keys():
                 fieldnames.add(f'metadata_{key}')
+    
+    if not fieldnames:
+        print("No valid records to save", file=sys.stderr)
+        return
     
     fieldnames = sorted(fieldnames)
     
@@ -54,6 +71,8 @@ def save_csv(data: list, filepath: str):
         writer.writeheader()
         
         for record in data:
+            if not isinstance(record, dict):
+                continue
             flat_record = dict(record)
             # Flatten metadata
             if 'metadata' in flat_record and isinstance(flat_record['metadata'], dict):
