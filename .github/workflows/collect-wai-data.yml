@@ -1,0 +1,48 @@
+name: Collect WAI Data
+
+on:
+  schedule:
+    # Run every 30 minutes
+    - cron: '*/30 * * * *'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  collect-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install httpx
+      
+      - name: Collect WAI data
+        env:
+          # Replace with your actual API URL when deployed
+          WAI_API_URL: ${{ secrets.WAI_API_URL || 'http://80.158.78.0:8000' }}
+        run: |
+          python collect_wai_data.py
+      
+      - name: Configure Git
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+      
+      - name: Commit and push changes
+        run: |
+          git add data/
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update WAI data - $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+            git push
+          fi
