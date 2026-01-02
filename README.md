@@ -1,26 +1,53 @@
 # WAI Backend
 
-Whale Activity Index (WAI) v0.1 - Backend Service
+Whale Activity Index (WAI) v2 - Backend Service
 
 ## Beschreibung
 
-Dieses Backend berechnet den **Whale Activity Index (WAI)**, der die Aktivität von großen Krypto-Transaktionen ("Whales") analysiert und in einem normalisierten Index darstellt.
+Dieses Backend berechnet den **Whale Activity Index (WAI v2)**, der die Aktivität von großen Bitcoin-Transaktionen ("Whales") analysiert. Der Index verwendet **volatilitätsabhängige Gewichtung** und **historisch adaptive Skalierung** für eine robuste Signalqualität.
 
-### Formel
+### Methodik (WAI v2)
 
-**Normalisierung:**
-- T̂_d = T_d / SMA_30(T)
-- V̂_d = V_d / SMA_30(V)
+Der WAI v2 verbessert die ursprüngliche Methodik durch dynamische Anpassung an Marktbedingungen:
 
-**WAI-Berechnung:**
+**1. Adaptive Normalisierung**
 ```
-WAI_d = 0.5 · T̂_d + 0.5 · V̂_d
+T̂_d = T_d / Baseline_30(T)
+V̂_d = V_d / Baseline_30(V)
 ```
 
-- **T_d**: Anzahl Whale-Transaktionen am Tag
-- **V_d**: Summe des Whale-Volumens am Tag
-- **SMA_30**: 30-Tage gleitender Durchschnitt
-- **Wertebereich**: [0, 3]
+Die Basislinie kann konfiguriert werden:
+- **SMA** (Simple Moving Average) - Standard
+- **EWMA** (Exponentially Weighted MA) - robuster gegen Ausreißer
+- **Median** - höchste Robustheit
+
+**2. Volatilitätsabhängige Gewichtung**
+
+Anstatt fixer 50/50-Gewichte werden die Komponenten dynamisch gewichtet:
+
+```
+vol_std_percentile = PercentileRank(std(V̂), window=30)
+weight_volume = vol_std_percentile
+weight_tx = 1 - weight_volume
+
+WAI_raw = weight_tx · T̂_d + weight_volume · V̂_d
+```
+
+**Logik:** 
+- Hohe Volumen-Volatilität → TX-Count wird stärker gewichtet
+- Stabile Volumen-Daten → Volumen wird stärker gewichtet
+
+**3. Historisch adaptive Skalierung**
+
+```
+WAI_percentile = PercentileRank(WAI_raw, window=180)
+WAI_index = round(WAI_percentile × 100)
+```
+
+- **Wertebereich**: [0, 100]
+- Zeigt die relative Position im 180-Tage-Fenster
+- WAI = 50 bedeutet Median-Aktivität
+- WAI > 80 bedeutet außergewöhnlich hohe Aktivität
 
 ## Installation
 
@@ -99,6 +126,11 @@ Der Server läuft dann auf: `http://localhost:8000`
 GET /api/wai/latest
 ```
 
+Liefert den neuesten WAI-Wert mit beiden Versionen:
+- `wai_index`: WAI v2 (volatilitätsgewichtet)
+- `wai_index_v1`: WAI v1 (50/50-Gewichtung)
+- Alle Komponenten und Gewichte
+
 #### WAI-Historie
 ```
 GET /api/wai/history?start_date=2024-01-01&end_date=2024-12-31&limit=100
@@ -108,6 +140,8 @@ Parameter:
 - `start_date` (optional): Startdatum (YYYY-MM-DD)
 - `end_date` (optional): Enddatum (YYYY-MM-DD)
 - `limit` (optional): Max. Anzahl Ergebnisse (1-1000)
+
+Liefert historische Daten mit v2 und v1 zum Vergleich.
 
 #### Statistiken
 ```
@@ -119,11 +153,27 @@ GET /api/wai/statistics
 GET /api/wai/formula
 ```
 
-## Datenquelle
+## Konfiguration
 
-Die täglichen Metriken werden von folgendem Repository abgerufen:
-```
-https://raw.githubusercontent.com/Whale-Activity-Analysis/wai-collector/refs/heads/main/data/daily_metrics.json
+Umgebungsvariablen können in `.env` Datei gesetzt werden:
+
+```bash
+# Server Settings
+HOST=0.0.0.0
+PORT=8000
+DEBUG=True
+
+# Data Source
+DATA_URL=https://raw.githubusercontent.com/Whale-Activity-Analysis/wai-collector/refs/heads/main/data/daily_metrics.json
+
+# WAI Calculation Parameters
+SMA_WINDOW=30
+WAI_MIN=0
+WAI_MAX=100
+
+# Baseline-Methode: "sma" (Standard), "ewma" (exponentiell), "median" (robust)
+USE_ROBUST_BASELINE=sma
+EWMA_SPAN=30
 ```
 
 ## Technologie-Stack
