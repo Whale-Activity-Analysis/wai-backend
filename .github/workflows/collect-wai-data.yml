@@ -9,6 +9,8 @@ on:
 jobs:
   collect-data:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Allow pushing changes
     
     steps:
       - name: Checkout repository

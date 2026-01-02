@@ -17,7 +17,6 @@ def fetch_wai_history(api_url: str) -> list:
         response = httpx.get(f"{api_url}/api/wai/history", timeout=60.0)
         response.raise_for_status()
         result = response.json()
-        print(response.json())
         
         # Handle different response structures
         if isinstance(result, dict) and 'data' in result:
