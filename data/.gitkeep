@@ -1,0 +1,13 @@
+# WAI Data Collection
+
+This directory contains collected WAI (Whale Activity Index) data.
+
+## Files
+
+- `wai_history.json` - Complete WAI history in JSON format
+- `wai_history.csv` - Complete WAI history in CSV format
+
+## Data Collection
+
+Data is automatically collected every 30 minutes via GitHub Actions.
+See `.github/workflows/collect-wai-data.yml` for details.
