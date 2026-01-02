@@ -34,17 +34,16 @@ jobs:
         run: |
           python collect_wai_data.py
       
-      - name: Configure Git
+      - name: Commit & Push Data
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-      
-      - name: Commit and push changes
-        run: |
-          git add data/
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "Update WAI data - $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          git add data/*.json data/*.csv
+          
+          if ! git diff --quiet || ! git diff --staged --quiet; then
+            git commit -m "📊 Update WAI data - $(date -u +'%Y-%m-%d %H:%M UTC')"
             git push
+            echo "✅ Changes committed and pushed"
+          else
+            echo "ℹ️  No changes to commit"
           fi
