@@ -1,21 +1,21 @@
 {
   "metadata": {
-    "collected_at": "2026-01-02T16:51:07.935522Z",
+    "collected_at": "2026-01-02T17:18:32.683432Z",
     "record_count": 32
   },
   "data": [
     {
       "date": "2026-01-02",
       "wai_index": 97,
-      "normalized_transaction_count": 0.8228,
-      "normalized_volume": 2.8889,
-      "weight_tx": 0.1667,
-      "weight_volume": 0.8333,
-      "wai_index_v1": 94,
-      "whale_tx_count": 13,
-      "whale_tx_volume_btc": 53303.96,
-      "sma_transaction_count": 15.8,
-      "sma_volume": 18451.28
+      "normalized_transaction_count": 1.0063,
+      "normalized_volume": 2.9722,
+      "weight_tx": 0.1,
+      "weight_volume": 0.9,
+      "wai_index_v1": 97,
+      "whale_tx_count": 16,
+      "whale_tx_volume_btc": 55009.73,
+      "sma_transaction_count": 15.9,
+      "sma_volume": 18508.14
     },
     {
       "date": "2026-01-01",
