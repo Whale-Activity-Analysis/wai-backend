@@ -7,7 +7,7 @@ import json
 import csv
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 import httpx
 
 
@@ -93,7 +93,7 @@ def main():
     
     # Add collection metadata
     collection_info = {
-        'collected_at': datetime.utcnow().isoformat() + 'Z',
+        'collected_at': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
         'record_count': len(data)
     }
     
