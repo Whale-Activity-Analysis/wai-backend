@@ -39,12 +39,12 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
-          # Pull latest changes to avoid conflicts
-          git pull --rebase origin ${{ github.ref_name }}
-          
           git add data/*.json data/*.csv
           
           if ! git diff --quiet || ! git diff --staged --quiet; then
+            # Pull latest changes before committing to avoid conflicts
+            git pull --rebase origin ${{ github.ref_name }}
+            
             git commit -m "📊 Update WAI data - $(date -u +'%Y-%m-%d %H:%M UTC')"
             git push
             echo "✅ Changes committed and pushed"
