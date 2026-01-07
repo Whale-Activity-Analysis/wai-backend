@@ -41,10 +41,7 @@ jobs:
           
           git add data/*.json data/*.csv
           
-          if ! git diff --quiet || ! git diff --staged --quiet; then
-            # Pull latest changes before committing to avoid conflicts
-            git pull --rebase origin ${{ github.ref_name }}
-            
+          if ! git diff --quiet || ! git diff --staged --quiet; then            
             git commit -m "📊 Update WAI data - $(date -u +'%Y-%m-%d %H:%M UTC')"
             git push
             echo "✅ Changes committed and pushed"
