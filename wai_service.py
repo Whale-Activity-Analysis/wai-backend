@@ -12,7 +12,7 @@ class WAIService:
     """Service zur Berechnung des Whale Activity Index"""
     
     DATA_URL = config.DATA_URL
-    SMA_WINDOW = config.SMA_WINDOW
+    MEDIAN_WINDOW = config.MEDIAN_WINDOW
     WAI_MIN = config.WAI_MIN
     WAI_MAX = config.WAI_MAX
     
@@ -34,25 +34,6 @@ class WAIService:
         
         return df
     
-    def calculate_sma(self, series: pd.Series, window: int) -> pd.Series:
-        """Berechnet den Simple Moving Average"""
-        return series.rolling(window=window, min_periods=1).mean()
-    
-    def calculate_ewma(self, series: pd.Series, span: int) -> pd.Series:
-        """
-        Berechnet den Exponentially Weighted Moving Average (EWMA).
-        
-        EWMA gibt neueren Werten mehr Gewicht, ist robuster gegen Ausreißer.
-        
-        Args:
-            series: Eingabe-Serie
-            span: Span-Parameter (äquivalent zu SMA-Fenster für Vergleichbarkeit)
-        
-        Returns:
-            Series mit EWMA-Werten
-        """
-        return series.ewm(span=span, adjust=False).mean()
-    
     def calculate_median_baseline(self, series: pd.Series, window: int) -> pd.Series:
         """
         Berechnet ein rollierendes Median-Fenster als robuste Basislinie.
@@ -67,24 +48,6 @@ class WAIService:
             Series mit Median-Werten
         """
         return series.rolling(window=window, min_periods=1).median()
-    
-    def calculate_baseline(self, series: pd.Series, window: int) -> pd.Series:
-        """
-        Berechnet die Basislinie basierend auf Feature-Flag (USE_ROBUST_BASELINE).
-        
-        Args:
-            series: Eingabe-Serie
-            window: Fenster-Größe / Span
-        
-        Returns:
-            Series mit Basislinie-Werten
-        """
-        if config.USE_ROBUST_BASELINE == "ewma":
-            return self.calculate_ewma(series, span=window)
-        elif config.USE_ROBUST_BASELINE == "median":
-            return self.calculate_median_baseline(series, window=window)
-        else:  # Default: "sma"
-            return self.calculate_sma(series, window=window)
     
     def calculate_percentile_rank(self, series: pd.Series, window: int = 180) -> pd.Series:
         """
@@ -170,8 +133,8 @@ class WAIService:
         und historisch adaptiver Percentile-Skalierung auf 0-100 (180 Tage).
         """
         result = df.copy()
-        result['baseline_tx'] = self.calculate_sma(result['whale_tx_count'], self.SMA_WINDOW)
-        result['baseline_vol'] = self.calculate_sma(result['whale_tx_volume_btc'], self.SMA_WINDOW)
+        result['baseline_tx'] = self.calculate_median_baseline(result['whale_tx_count'], self.MEDIAN_WINDOW)
+        result['baseline_vol'] = self.calculate_median_baseline(result['whale_tx_volume_btc'], self.MEDIAN_WINDOW)
         result['norm_tx'] = result['whale_tx_count'] / result['baseline_tx']
         result['norm_vol'] = result['whale_tx_volume_btc'] / result['baseline_vol']
         result['wai_v1_raw'] = 0.5 * result['norm_tx'] + 0.5 * result['norm_vol']
@@ -187,9 +150,9 @@ class WAIService:
         Berechnet den WAI mit volatilitätsabhängigen Gewichten.
         
         Schritte:
-        1. Normalisierung durch adaptive Basislinie (SMA/EWMA/Median):
-           - T_hat = T_d / Baseline_30(T)
-           - V_hat = V_d / Baseline_30(V)
+        1. Normalisierung durch Median-Basislinie:
+           - T_hat = T_d / Median_30(T)
+           - V_hat = V_d / Median_30(V)
         
         2. Volatilitätsabhängige Gewichtung:
            - weight_vol = PercentileRank(std(V_hat), window=30)
@@ -206,14 +169,14 @@ class WAIService:
         result = df.copy()
         
         # Basislinie für Transaction Count und Volume berechnen
-        # Verwendet konfigurierbare Baseline (SMA/EWMA/Median)
-        result['sma_transaction_count'] = self.calculate_baseline(
+        # Verwendet Median-Basislinie
+        result['sma_transaction_count'] = self.calculate_median_baseline(
             result['whale_tx_count'], 
-            self.SMA_WINDOW
+            self.MEDIAN_WINDOW
         )
-        result['sma_total_volume'] = self.calculate_baseline(
+        result['sma_total_volume'] = self.calculate_median_baseline(
             result['whale_tx_volume_btc'], 
-            self.SMA_WINDOW
+            self.MEDIAN_WINDOW
         )
         
         # Normalisierung
@@ -228,7 +191,7 @@ class WAIService:
         weight_tx, weight_volume = self.calculate_dynamic_weights(
             result['normalized_transaction_count'],
             result['normalized_volume'],
-            window=self.SMA_WINDOW
+            window=self.MEDIAN_WINDOW
         )
         
         result['weight_tx'] = weight_tx
@@ -307,8 +270,8 @@ class WAIService:
                 'wai_index_v1': int(round(float(row['wai_v1']))),
                 'whale_tx_count': int(row['whale_tx_count']),
                 'whale_tx_volume_btc': round(float(row['whale_tx_volume_btc']), 2),
-                'sma_transaction_count': round(float(row['sma_transaction_count']), 2),
-                'sma_volume': round(float(row['sma_total_volume']), 2)
+                'median_transaction_count': round(float(row['sma_transaction_count']), 2),
+                'median_volume': round(float(row['sma_total_volume']), 2)
             })
         
         return result
@@ -366,8 +329,8 @@ class WAIService:
         
         # === ALTES SYSTEM: Linear, 50/50 ===
         df_old = df.copy()
-        df_old['baseline_tx'] = self.calculate_sma(df_old['whale_tx_count'], self.SMA_WINDOW)
-        df_old['baseline_vol'] = self.calculate_sma(df_old['whale_tx_volume_btc'], self.SMA_WINDOW)
+        df_old['baseline_tx'] = self.calculate_median_baseline(df_old['whale_tx_count'], self.MEDIAN_WINDOW)
+        df_old['baseline_vol'] = self.calculate_median_baseline(df_old['whale_tx_volume_btc'], self.MEDIAN_WINDOW)
         df_old['norm_tx'] = df_old['whale_tx_count'] / df_old['baseline_tx']
         df_old['norm_vol'] = df_old['whale_tx_volume_btc'] / df_old['baseline_vol']
         df_old['wai_raw'] = 0.5 * df_old['norm_tx'] + 0.5 * df_old['norm_vol']
