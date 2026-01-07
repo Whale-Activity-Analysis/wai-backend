@@ -12,14 +12,11 @@ Der WAI v2 verbessert die ursprüngliche Methodik durch dynamische Anpassung an 
 
 **1. Adaptive Normalisierung**
 ```
-T̂_d = T_d / Baseline_30(T)
-V̂_d = V_d / Baseline_30(V)
+T̂_d = T_d / Median_30(T)
+V̂_d = V_d / Median_30(V)
 ```
 
-Die Basislinie kann konfiguriert werden:
-- **SMA** (Simple Moving Average) - Standard
-- **EWMA** (Exponentially Weighted MA) - robuster gegen Ausreißer
-- **Median** - höchste Robustheit
+Die Basislinie verwendet rollierenden Median für maximale Robustheit gegen Ausreißer.
 
 **2. Volatilitätsabhängige Gewichtung**
 
@@ -167,13 +164,9 @@ DEBUG=True
 DATA_URL=https://raw.githubusercontent.com/Whale-Activity-Analysis/wai-collector/refs/heads/main/data/daily_metrics.json
 
 # WAI Calculation Parameters
-SMA_WINDOW=30
+MEDIAN_WINDOW=30
 WAI_MIN=0
 WAI_MAX=100
-
-# Baseline-Methode: "sma" (Standard), "ewma" (exponentiell), "median" (robust)
-USE_ROBUST_BASELINE=sma
-EWMA_SPAN=30
 ```
 
 ## Technologie-Stack

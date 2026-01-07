@@ -21,7 +21,7 @@ Diese Formulierung weist mehrere konzeptionelle Schwächen auf:
 Die neue Version adressiert diese Limitationen durch:
 - **Adaptive Volatilitätsgewichtung:** Dynamische Verteilung basierend auf Volumen-Volatilität
 - **Percentile-basierte Skalierung:** Historisch kontextualisierte Rang-Normalisierung
-- **Robuste Basislinie:** Optional EWMA/Median statt SMA zur Reduktion von Ausreißereffekten
+- **Robuste Basislinie:** Median statt Mittelwert zur Reduktion von Ausreißereffekten
 
 ---
 
@@ -33,18 +33,17 @@ Gegeben sei eine Zeitserie von Whale-Metriken für Tag $d$:
 - $T_d$ = Anzahl Whale-Transaktionen
 - $V_d$ = Gesamtvolumen Whale-Transaktionen (BTC)
 
-Die Normalisierung erfolgt durch eine adaptive Basislinie $B(.)$:
+Die Normalisierung erfolgt durch eine Median-Basislinie $B(.)$:
 
 $$\hat{T}_d = \frac{T_d}{B_T(d)}$$
 
 $$\hat{V}_d = \frac{V_d}{B_V(d)}$$
 
-wobei $B(d)$ die Basislinie zum Zeitpunkt $d$ darstellt.
+wobei $B(d)$ die Median-Basislinie zum Zeitpunkt $d$ darstellt:
 
-**Basislinie-Varianten:**
-- SMA: $B_T(d) = \text{SMA}_{30}(T)$
-- EWMA: $B_T(d) = \text{EWMA}_{\text{span}=30}(T)$
-- Median: $B_T(d) = \text{Median}_{30}(T)$
+$$B_T(d) = \text{Median}_{30}(T)$$
+
+$$B_V(d) = \text{Median}_{30}(V)$$
 
 ### 2.2 Volatilitätsabhängige Gewichtung
 
@@ -124,13 +123,6 @@ Percentile-basierte Skalierung berücksichtigt die Häufigkeit von Hochaktivitä
 
 Die API gibt dynamische Gewichte direkt aus, ermöglicht Post-hoc-Audit und externe Validierung.
 
-### 3.5 Flexibilität in der Basislinie
-
-Konfigurierbare Baseline (SMA/EWMA/Median) erlaubt Anpassung an spezifische Anforderungen:
-- SMA: Schnelle Reaktion
-- EWMA: Trend-Sensitivität
-- Median: Maximum Robustheit
-
 ---
 
 ## 4. Limitationen und offene Fragen
@@ -141,9 +133,9 @@ Die Wahl von Fenster-Größen ist nicht vollständig theoretisch begründet:
 
 | Parameter | Wert | Begründung | Sensitivität |
 |-----------|------|-----------|--------------|
-| SMA_WINDOW | 30 | Konvention (~1 Monat) | Hoch |
+| MEDIAN_WINDOW | 30 | Konvention (~1 Monat) | Hoch |
 | PERCENTILE_WINDOW | 180 | Konvention (~6 Monate) | Hoch |
-| VOLATILITY_WINDOW | 30 | SMA_WINDOW | Mittel |
+| VOLATILITY_WINDOW | 30 | MEDIAN_WINDOW | Mittel |
 
 Eine empirische Optimierung (z.B. via Sharpe Ratio) wäre wünschenswert.
 

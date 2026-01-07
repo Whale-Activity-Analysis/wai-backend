@@ -8,7 +8,7 @@ services:
       - HOST=${HOST:-0.0.0.0}
       - PORT=${PORT:-8000}
       - DEBUG=${DEBUG:-False}
-      - SMA_WINDOW=${SMA_WINDOW:-30}
+      - MEDIAN_WINDOW=${MEDIAN_WINDOW:-30}
       - WAI_MIN=${WAI_MIN:-0}
       - WAI_MAX=${WAI_MAX:-100}
     restart: unless-stopped
