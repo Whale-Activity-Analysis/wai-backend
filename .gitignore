@@ -20,6 +20,7 @@ ENV/
 # Git
 .git
 .gitignore
+.env
 
 # OS
 .DS_Store
