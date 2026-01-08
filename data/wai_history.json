@@ -1,9 +1,22 @@
 {
   "metadata": {
-    "collected_at": "2026-01-08T01:47:47.564741Z",
-    "record_count": 33
+    "collected_at": "2026-01-08T03:39:48.025734Z",
+    "record_count": 34
   },
   "data": [
+    {
+      "date": "2026-01-08",
+      "wai_index": 3,
+      "normalized_transaction_count": 0.0,
+      "normalized_volume": 0.0,
+      "weight_tx": 0.1,
+      "weight_volume": 0.9,
+      "wai_index_v1": 3,
+      "whale_tx_count": 0,
+      "whale_tx_volume_btc": 0.0,
+      "sma_transaction_count": 15.13,
+      "sma_volume": 18368.62
+    },
     {
       "date": "2026-01-07",
       "wai_index": 94,
