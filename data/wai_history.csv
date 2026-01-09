@@ -1,4 +1,5 @@
 date,normalized_transaction_count,normalized_volume,sma_transaction_count,sma_volume,wai_index,wai_index_v1,weight_tx,weight_volume,whale_tx_count,whale_tx_volume_btc
+2026-01-09,0.0,0.0,14.97,17983.16,3,3,0.0333,0.9667,0,0.0
 2026-01-08,1.3263,0.5338,15.83,18701.4,31,47,0.1333,0.8667,21,9983.22
 2026-01-07,1.1465,2.2038,15.7,19252.89,97,87,0.0667,0.9333,18,42429.8
 2026-01-06,0.9761,0.3933,15.37,17949.39,30,30,0.1333,0.8667,15,7058.65
