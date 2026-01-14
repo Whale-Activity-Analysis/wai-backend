@@ -127,73 +127,6 @@ def plot_analysis(df, output_dir):
     plt.close()
     
 
-def generate_markdown_report(df, metrics_v1, metrics_v2, comparison, output_dir):
-    """Generiere Markdown Report"""
-
-    col_v2 = 'wai_index' if 'wai_index' in df.columns else 'wai'
-    col_v1 = 'wai_index_v1' if 'wai_index_v1' in df.columns else 'wai_v1'
-    
-    report = f"""# WAI Index Validierung & Analyse
-**Erstellt am:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}  
-**Datenbasis:** {len(df)} Tage ({df['date'].min().strftime('%Y-%m-%d')} bis {df['date'].max().strftime('%Y-%m-%d')})
-
----
-
-## Vergleich: WAI v1 vs v2
-
-| Metrik | WAI v1 | WAI v2 | Differenz |
-|--------|--------|--------|-----------|
-| Mittelwert | {metrics_v1['mean']:.2f} | {metrics_v2['mean']:.2f} | {metrics_v2['mean'] - metrics_v1['mean']:+.2f} |
-| Median | {metrics_v1['median']:.2f} | {metrics_v2['median']:.2f} | {metrics_v2['median'] - metrics_v1['median']:+.2f} |
-| Standardabweichung | {metrics_v1['std']:.2f} | {metrics_v2['std']:.2f} | {metrics_v2['std'] - metrics_v1['std']:+.2f} |
-| Min / Max | {metrics_v1['min']:.0f} / {metrics_v1['max']:.0f} | {metrics_v2['min']:.0f} / {metrics_v2['max']:.0f} | {metrics_v2['min'] - metrics_v1['min']:+.0f} / {metrics_v2['max'] - metrics_v1['max']:+.0f} |
-| Tage > 80 | {metrics_v1['days_over_80']} ({metrics_v1['pct_over_80']:.1f}%) | {metrics_v2['days_over_80']} ({metrics_v2['pct_over_80']:.1f}%) | {metrics_v2['days_over_80'] - metrics_v1['days_over_80']:+} |
-| Tage > 50 | {metrics_v1['days_over_50']} ({metrics_v1['pct_over_50']:.1f}%) | {metrics_v2['days_over_50']} ({metrics_v2['pct_over_50']:.1f}%) | {metrics_v2['days_over_50'] - metrics_v1['days_over_50']:+} |
-| Korrelation v1↔v2 | - | - | **{df[col_v1].corr(df[col_v2]):.3f}** |
-
-### Autokorrelation (Lag 1-3)
-
-| Version | 1 Tag | 2 Tage | 3 Tage |
-|---------|-------|--------|--------|
-| WAI v1 | {metrics_v1['autocorr_lag1']:.3f} | {metrics_v1['autocorr_lag2']:.3f} | {metrics_v1['autocorr_lag3']:.3f} |
-| WAI v2 | {metrics_v2['autocorr_lag1']:.3f} | {metrics_v2['autocorr_lag2']:.3f} | {metrics_v2['autocorr_lag3']:.3f} |
-
----
-
-## Fazit
-
-**Messbare Unterschiede:**
-- **Durchschnitt**: v2 ist {'höher' if metrics_v2['mean'] > metrics_v1['mean'] else 'niedriger'} ({metrics_v2['mean']:.1f} vs {metrics_v1['mean']:.1f})
-- **Volatilität**: v2 ist {'stabiler' if metrics_v2['std'] < metrics_v1['std'] else 'volatiler'} (σ={metrics_v2['std']:.2f} vs {metrics_v1['std']:.2f})
-- **Extremwerte**: v2 hat {'weniger' if metrics_v2['days_over_80'] < metrics_v1['days_over_80'] else 'mehr'} Tage >80
-- **Korrelation**: r={df['wai_index_v1'].corr(df['wai_index']):.3f} (stark korreliert)
-
-**Empfehlung für Projektbericht:**
-
-"""
-
-
-    # Intelligente Empfehlung basierend auf Metriken
-    corr = df[col_v1].corr(df[col_v2])
-    
-    report += f"""
-WAI v2 stellt eine **messbare Verbesserung** dar:
-- ✅ Dynamische Gewichtung zwischen Transaktionszahl und Volumen
-- ✅ Median-Basislinie robuster gegen Ausreißer
-- ✅ Hohe Korrelation mit v1 (r={corr:.3f}) zeigt Konsistenz
-- ✅ {'Stabilere Metrik' if metrics_v2['std'] < metrics_v1['std'] else 'Sensiblere Erkennung von Veränderungen'}
-
----
-
-*Visualisierung: siehe `wai_validation_overview.png`*
-"""
-    
-    output_path = output_dir / 'WAI_Index_Validierung.md'
-    with open(output_path, 'w', encoding='utf-8') as f:
-        f.write(report)
-    
-    print(f"✓ Markdown Report erstellt: {output_path}")
-
 def main():
     """Hauptfunktion"""
     print("🔍 WAI Index Validierung & Analyse\n")
@@ -229,11 +162,6 @@ def main():
     # Plots erstellen
     print("🎨 Erstelle Visualisierung...")
     plot_analysis(df, output_dir)
-    print()
-    
-    # Markdown Report
-    print("📝 Generiere Report...")
-    generate_markdown_report(df, metrics_v1, metrics_v2, comparison, output_dir)
     print()
     
     # Zusammenfassung
