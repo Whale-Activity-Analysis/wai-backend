@@ -156,9 +156,9 @@ class WAIService:
         )
         vol_std_percentile = vol_std_percentile.fillna(0.5)  # Default: 50/50 bei fehlenden Daten
         
-        # Inverse Beziehung: Höhere V-Volatilität → geringeres V-Gewicht
-        weight_volume = vol_std_percentile
-        weight_tx = 1.0 - vol_std_percentile
+        # Inverse Beziehung: Höhere V-Volatilität → geringeres V-Gewicht, höheres TX-Gewicht
+        weight_volume = 1.0 - vol_std_percentile  # Wenn vol volatil, dann NIEDRIGES Gewicht für Volume
+        weight_tx = vol_std_percentile             # Wenn vol volatil, dann HOHES Gewicht für TX (zuverlässiger)
         
         return weight_tx, weight_volume
 
