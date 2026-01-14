@@ -95,6 +95,28 @@ wobei:
 - $\text{PR}_{w}(x)$ = Percentile Rank mit Fenster-Größe $w$
 - $w_T(d) = 1 - \text{PR}_{30}(\text{std}(\hat{V}_{[d-29:d]}))$
 
+### 2.7 Exponentielle Glättung (EMA-Smoothing)
+
+Nach der Skalierung wird ein **Exponential Moving Average (EMA)** über 7 Tage angewendet, um Ausschläge zu reduzieren:
+
+$$\text{WAI}_{\text{final}}(d) = \text{EMA}_7(\text{WAI}_{\text{scaled}})$$
+
+Die EMA wird berechnet als:
+
+$$\text{EMA}(d) = \alpha \cdot \text{WAI}_{\text{scaled}}(d) + (1 - \alpha) \cdot \text{EMA}(d-1)$$
+
+wobei $\alpha = \frac{2}{\text{span} + 1} = \frac{2}{8} = 0.25$ für `span=7`.
+
+**Zweck:** 
+- Reduziert "Spikes" (Werte sehr nahe 0 oder 100)
+- Verleiht neueren Beobachtungen mehr Gewicht (exponentiell fallend in die Vergangenheit)
+- Erhält Informationsgehalt während Noise-Reduktion
+- Typischerweise "sanftere" Übergänge zwischen Aktivitätsphasen
+
+**Vergleich:**
+- **Ungeglättet:** WAI springt von 45 → 92 → 38 → 71 (reaktiv, aber chaotisch)
+- **EMA-geglättet:** WAI verläuft 45 → 62 → 68 → 70 (folgt Trend, glatter)
+
 ---
 
 ## 3. Vorteile gegenüber WAI_v1

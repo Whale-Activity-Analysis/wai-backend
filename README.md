@@ -46,6 +46,20 @@ WAI_index = round(WAI_percentile × 100)
 - WAI = 50 bedeutet Median-Aktivität
 - WAI > 80 bedeutet außergewöhnlich hohe Aktivität
 
+**4. EMA-Smoothing gegen Ausschläge**
+
+Nach der Skalierung wird der Index durch **exponentielle Glättung** über 7 Tage beruhigt:
+
+```
+WAI_final = EMA_7(WAI_scaled)
+```
+
+**Was bedeutet das?** Stell dir vor, die Werte wären Punkte auf einem Papier:
+- **Ohne Smoothing**: Wenn an Tag A plötzlich 100 Whale-Transaktionen kommen, springt der Index von 45 auf 92, dann Tag darauf wieder auf 38. Zappelig!
+- **Mit EMA-Smoothing**: Der Index bewegt sich sanfter. Ein Ausreißer beeinflusst nicht nur einen Tag, sondern wird über mehrere Tage "verteilt". Neuere Tage haben mehr Gewicht, daher reagiert der Index schnell, aber nicht übertrieben.
+
+**Resultat:** Der WAI wird weniger von einzelnen extremen Tagen verzerrt → zuverlässigere Signale für Nutzer.
+
 ## Installation
 
 ### 1. Virtual Environment erstellen

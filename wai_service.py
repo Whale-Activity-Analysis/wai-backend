@@ -13,16 +13,19 @@ class WAIService:
     
     DATA_URL = config.DATA_URL
     MEDIAN_WINDOW = config.MEDIAN_WINDOW
+    WAI_SMOOTHING_WINDOW = config.WAI_SMOOTHING_WINDOW
     WAI_MIN = config.WAI_MIN
     WAI_MAX = config.WAI_MAX
+    BTC_DATA_URL = config.BTC_DATA_URL
     
     def __init__(self):
         self.cached_data: Optional[pd.DataFrame] = None
         self.last_fetch: Optional[datetime] = None
     
     async def fetch_daily_metrics(self) -> pd.DataFrame:
-        """Lädt die täglichen Metriken von der API"""
+        """Lädt die täglichen Metriken und BTC-Daten von der API"""
         async with httpx.AsyncClient() as client:
+            # Whale Activity Daten laden
             response = await client.get(self.DATA_URL, timeout=30.0)
             response.raise_for_status()
             data = response.json()
@@ -31,6 +34,38 @@ class WAIService:
         df = pd.DataFrame(data['daily_metrics'])
         df['date'] = pd.to_datetime(df['date'])
         df = df.sort_values('date')
+        
+        # BTC-Daten laden (letzte 180 Tage)
+        try:
+            async with httpx.AsyncClient() as client:
+                params = {
+                    'vs_currency': 'usd',
+                    'days': '180',
+                    'interval': 'daily'
+                }
+                response = await client.get(self.BTC_DATA_URL, params=params, timeout=30.0)
+                response.raise_for_status()
+                btc_data = response.json()
+            
+            # BTC Schlusskurse in DataFrame konvertieren
+            prices = btc_data.get('prices', [])
+            btc_df = pd.DataFrame(prices, columns=['timestamp', 'btc_close'])
+            btc_df['date'] = pd.to_datetime(btc_df['timestamp'], unit='ms').dt.date
+            btc_df = btc_df[['date', 'btc_close']].drop_duplicates(subset=['date'])
+            
+            # 1D-Rendite und 7D-Volatilität berechnen
+            btc_df['btc_close'] = btc_df['btc_close'].astype(float)
+            btc_df['btc_return_1d'] = btc_df['btc_close'].pct_change()
+            btc_df['btc_volatility_7d'] = btc_df['btc_close'].rolling(window=7).std() / btc_df['btc_close'].rolling(window=7).mean()
+            btc_df['date'] = pd.to_datetime(btc_df['date'])
+            
+            # Merge mit Whale-Daten
+            df = df.merge(btc_df, on='date', how='left')
+        except Exception as e:
+            print(f"Warnung: BTC-Daten konnten nicht geladen werden: {e}")
+            df['btc_close'] = None
+            df['btc_return_1d'] = None
+            df['btc_volatility_7d'] = None
         
         return df
     
@@ -211,7 +246,10 @@ class WAIService:
         )
         
         # Skaliere auf [0, 100] und runde
-        result['wai'] = (result['wai_percentile'] * 100).round()
+        result['wai_scaled'] = (result['wai_percentile'] * 100).round()
+        
+        # Smoothing mit EMA für weniger Ausschläge
+        result['wai'] = result['wai_scaled'].ewm(span=self.WAI_SMOOTHING_WINDOW, adjust=False).mean().round()
         
         # NaN-Werte behandeln (für erste Tage ohne vollständigen Fenster)
         result['wai'] = result['wai'].fillna(0)
@@ -260,19 +298,27 @@ class WAIService:
         # In Dictionary-Format konvertieren
         result = []
         for _, row in df_with_wai.iterrows():
-            result.append({
+            btc_close = row.get('btc_close')
+            btc_return = row.get('btc_return_1d')
+            btc_vol = row.get('btc_volatility_7d')
+            
+            item = {
                 'date': row['date'].strftime('%Y-%m-%d'),
-                'wai_index': int(round(float(row['wai']))),
-                'normalized_transaction_count': round(float(row['normalized_transaction_count']), 4),
-                'normalized_volume': round(float(row['normalized_volume']), 4),
-                'weight_tx': round(float(row['weight_tx']), 4),
-                'weight_volume': round(float(row['weight_volume']), 4),
-                'wai_index_v1': int(round(float(row['wai_v1']))),
-                'whale_tx_count': int(row['whale_tx_count']),
-                'whale_tx_volume_btc': round(float(row['whale_tx_volume_btc']), 2),
-                'median_transaction_count': round(float(row['sma_transaction_count']), 2),
-                'median_volume': round(float(row['sma_total_volume']), 2)
-            })
+                'wai': int(round(float(row['wai']))),
+                'wai_v1': int(round(float(row['wai_v1']))),
+                'tx_count': int(row['whale_tx_count']),
+                'volume': round(float(row['whale_tx_volume_btc']), 2),
+            }
+            
+            # BTC-Daten hinzufügen wenn verfügbar
+            if btc_close is not None:
+                item['btc_close'] = round(float(btc_close), 2)
+            if btc_return is not None:
+                item['btc_return_1d'] = round(float(btc_return), 4)
+            if btc_vol is not None:
+                item['btc_volatility_7d'] = round(float(btc_vol), 4)
+            
+            result.append(item)
         
         return result
     

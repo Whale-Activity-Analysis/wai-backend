@@ -64,10 +64,10 @@ async def health_check():
 @app.get("/api/wai/latest")
 async def get_latest_wai():
     """
-    Gibt den aktuellsten WAI-Wert zurück (v2) und den historischen v1-Vergleich.
+    Gibt den aktuellsten WAI-Wert zurück (v2) und den historischen v1-Vergleich mit BTC-Daten.
     
     Returns:
-        Dictionary mit dem neuesten WAI-Wert, v1-Vergleich und allen Metriken
+        Dictionary mit dem neuesten WAI-Wert, v1-Vergleich, BTC-Preis und Volatilität
     """
     try:
         result = await wai_service.get_latest_wai()
@@ -83,7 +83,7 @@ async def get_wai_history(
     limit: Optional[int] = Query(None, ge=1, le=1000, description="Max. Anzahl Ergebnisse (1-1000)")
 ):
     """
-    Gibt WAI-Historie für einen Zeitraum zurück (v2) plus v1-Vergleichswerte.
+    Gibt WAI-Historie für einen Zeitraum zurück (v2) plus v1-Vergleichswerte und BTC-Daten.
     
     Query Parameters:
         - start_date: Startdatum im Format YYYY-MM-DD
@@ -91,7 +91,14 @@ async def get_wai_history(
         - limit: Maximale Anzahl der Ergebnisse (neueste zuerst)
     
     Returns:
-        Liste mit WAI-Berechnungen inkl. `wai_index` (v2) und `wai_index_v1` (linear 50/50)
+        Liste mit WAI-Berechnungen inkl.:
+        - `wai` (v2): Percentile + EMA-Smoothing
+        - `wai_v1`: Linear 50/50 mit Percentile-Skalierung
+        - `tx_count`: Whale-Transaktionen
+        - `volume`: Whale-Volumen (BTC)
+        - `btc_close`: BTC-Schlusskurs (USD)
+        - `btc_return_1d`: Tägliche BTC-Rendite
+        - `btc_volatility_7d`: 7-Tage BTC-Volatilität
     """
     try:
         # Datumsvalidierung
