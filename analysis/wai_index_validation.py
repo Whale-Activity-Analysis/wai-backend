@@ -29,7 +29,11 @@ def load_data():
 
 def calculate_metrics(df, version='v2'):
     """Berechne Metriken für eine WAI Version"""
-    col = 'wai_index' if version == 'v2' else 'wai_index_v1'
+    # Unterstütze neue Feldnamen (wai / wai_v1) und alte (wai_index / wai_index_v1)
+    col_candidates = ['wai_index', 'wai'] if version == 'v2' else ['wai_index_v1', 'wai_v1']
+    col = next((c for c in col_candidates if c in df.columns), None)
+    if col is None:
+        raise ValueError(f"Keine Spalte für Version {version} gefunden. Erwartet: {col_candidates}")
     
     metrics = {
         'version': version,
@@ -70,14 +74,17 @@ def create_comparison_table(metrics_v1, metrics_v2):
 
 def plot_analysis(df, output_dir):
     """Erstelle Visualisierungen"""
+
+    col_v2 = 'wai_index' if 'wai_index' in df.columns else 'wai'
+    col_v1 = 'wai_index_v1' if 'wai_index_v1' in df.columns else 'wai_v1'
     
     # Plot: Verteilung (Histogramme) - beide Versionen
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
     fig.suptitle('WAI Index Validation: v1 vs v2', fontsize=16, fontweight='bold')
     
     # Histogramme
-    axes[0, 0].hist(df['wai_index_v1'], bins=20, alpha=0.6, label='v1', color='steelblue', edgecolor='black')
-    axes[0, 0].hist(df['wai_index'], bins=20, alpha=0.6, label='v2', color='coral', edgecolor='black')
+    axes[0, 0].hist(df[col_v1], bins=20, alpha=0.6, label='v1', color='steelblue', edgecolor='black')
+    axes[0, 0].hist(df[col_v2], bins=20, alpha=0.6, label='v2', color='coral', edgecolor='black')
     axes[0, 0].set_xlabel('WAI Index Wert')
     axes[0, 0].set_ylabel('Häufigkeit')
     axes[0, 0].set_title('Verteilung der WAI Werte')
@@ -85,8 +92,8 @@ def plot_analysis(df, output_dir):
     axes[0, 0].axvline(80, color='red', linestyle='--', alpha=0.7, label='Schwelle 80')
     
     # Zeitreihe
-    axes[0, 1].plot(df['date'], df['wai_index_v1'], marker='o', label='v1', alpha=0.7, linewidth=2)
-    axes[0, 1].plot(df['date'], df['wai_index'], marker='s', label='v2', alpha=0.7, linewidth=2)
+    axes[0, 1].plot(df['date'], df[col_v1], marker='o', label='v1', alpha=0.7, linewidth=2)
+    axes[0, 1].plot(df['date'], df[col_v2], marker='s', label='v2', alpha=0.7, linewidth=2)
     axes[0, 1].set_xlabel('Datum')
     axes[0, 1].set_ylabel('WAI Index')
     axes[0, 1].set_title('WAI Zeitreihe')
@@ -96,7 +103,7 @@ def plot_analysis(df, output_dir):
     axes[0, 1].grid(True, alpha=0.3)
     
     # Autokorrelation v1
-    lags_v1 = [df['wai_index_v1'].autocorr(lag=i) for i in range(1, 8)]
+    lags_v1 = [df[col_v1].autocorr(lag=i) for i in range(1, 8)]
     axes[1, 0].bar(range(1, 8), lags_v1, alpha=0.7, color='steelblue', edgecolor='black')
     axes[1, 0].set_xlabel('Lag (Tage)')
     axes[1, 0].set_ylabel('Autokorrelation')
@@ -106,7 +113,7 @@ def plot_analysis(df, output_dir):
     axes[1, 0].grid(True, alpha=0.3, axis='y')
     
     # Autokorrelation v2
-    lags_v2 = [df['wai_index'].autocorr(lag=i) for i in range(1, 8)]
+    lags_v2 = [df[col_v2].autocorr(lag=i) for i in range(1, 8)]
     axes[1, 1].bar(range(1, 8), lags_v2, alpha=0.7, color='coral', edgecolor='black')
     axes[1, 1].set_xlabel('Lag (Tage)')
     axes[1, 1].set_ylabel('Autokorrelation')
@@ -122,6 +129,9 @@ def plot_analysis(df, output_dir):
 
 def generate_markdown_report(df, metrics_v1, metrics_v2, comparison, output_dir):
     """Generiere Markdown Report"""
+
+    col_v2 = 'wai_index' if 'wai_index' in df.columns else 'wai'
+    col_v1 = 'wai_index_v1' if 'wai_index_v1' in df.columns else 'wai_v1'
     
     report = f"""# WAI Index Validierung & Analyse
 **Erstellt am:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}  
@@ -139,7 +149,7 @@ def generate_markdown_report(df, metrics_v1, metrics_v2, comparison, output_dir)
 | Min / Max | {metrics_v1['min']:.0f} / {metrics_v1['max']:.0f} | {metrics_v2['min']:.0f} / {metrics_v2['max']:.0f} | {metrics_v2['min'] - metrics_v1['min']:+.0f} / {metrics_v2['max'] - metrics_v1['max']:+.0f} |
 | Tage > 80 | {metrics_v1['days_over_80']} ({metrics_v1['pct_over_80']:.1f}%) | {metrics_v2['days_over_80']} ({metrics_v2['pct_over_80']:.1f}%) | {metrics_v2['days_over_80'] - metrics_v1['days_over_80']:+} |
 | Tage > 50 | {metrics_v1['days_over_50']} ({metrics_v1['pct_over_50']:.1f}%) | {metrics_v2['days_over_50']} ({metrics_v2['pct_over_50']:.1f}%) | {metrics_v2['days_over_50'] - metrics_v1['days_over_50']:+} |
-| Korrelation v1↔v2 | - | - | **{df['wai_index_v1'].corr(df['wai_index']):.3f}** |
+| Korrelation v1↔v2 | - | - | **{df[col_v1].corr(df[col_v2]):.3f}** |
 
 ### Autokorrelation (Lag 1-3)
 
@@ -164,7 +174,7 @@ def generate_markdown_report(df, metrics_v1, metrics_v2, comparison, output_dir)
 
 
     # Intelligente Empfehlung basierend auf Metriken
-    corr = df['wai_index_v1'].corr(df['wai_index'])
+    corr = df[col_v1].corr(df[col_v2])
     
     report += f"""
 WAI v2 stellt eine **messbare Verbesserung** dar:
@@ -196,6 +206,10 @@ def main():
     print("📊 Lade Daten...")
     df = load_data()
     print(f"   {len(df)} Datenpunkte geladen\n")
+
+    # Spaltennamen auflösen (alt vs. neu)
+    col_v2 = 'wai_index' if 'wai_index' in df.columns else 'wai'
+    col_v1 = 'wai_index_v1' if 'wai_index_v1' in df.columns else 'wai_v1'
     
     # Metriken berechnen
     print("📈 Berechne Metriken...")
@@ -203,6 +217,9 @@ def main():
     metrics_v2 = calculate_metrics(df, 'v2')
     comparison, diff = create_comparison_table(metrics_v1, metrics_v2)
     print(f"   Metriken berechnet\n")
+
+    # Korrelation berechnen (v1 vs v2)
+    corr = df[col_v1].corr(df[col_v2])
     
     # Vergleichstabelle speichern
     comparison_path = output_dir / 'wai_comparison_metrics.csv'
@@ -230,7 +247,7 @@ def main():
     print("\n📊 Schnellübersicht:")
     print(f"   WAI v1: μ={metrics_v1['mean']:.1f}, σ={metrics_v1['std']:.2f}, Tage>80: {metrics_v1['days_over_80']}")
     print(f"   WAI v2: μ={metrics_v2['mean']:.1f}, σ={metrics_v2['std']:.2f}, Tage>80: {metrics_v2['days_over_80']}")
-    print(f"   Korrelation: r={df['wai_index_v1'].corr(df['wai_index']):.3f}")
+    print(f"   Korrelation: r={corr:.3f}")
     print()
 
 if __name__ == "__main__":
