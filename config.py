@@ -23,9 +23,16 @@ class Config:
     )
     
     # WAI Calculation Parameters
-    MEDIAN_WINDOW = int(os.getenv("MEDIAN_WINDOW", 30))
+    MEDIAN_WINDOW = int(os.getenv("MEDIAN_WINDOW", 50))
+    WAI_SMOOTHING_WINDOW = int(os.getenv("WAI_SMOOTHING_WINDOW", 7))  # EMA fuer Glaettung
     WAI_MIN = int(os.getenv("WAI_MIN", 0))
     WAI_MAX = int(os.getenv("WAI_MAX", 100))
+    
+    # BTC Data Source
+    BTC_DATA_URL = os.getenv(
+        "BTC_DATA_URL",
+        "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart"
+    )
 
 
 # Singleton-Instanz
