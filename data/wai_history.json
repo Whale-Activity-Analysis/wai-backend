@@ -1,15 +1,15 @@
 {
   "metadata": {
-    "collected_at": "2026-01-15T09:28:54.607641Z",
+    "collected_at": "2026-01-15T09:51:52.933745Z",
     "record_count": 31
   },
   "data": [
     {
       "date": "2026-01-15",
-      "wai": 49,
+      "wai": 50,
       "wai_v1": 6,
-      "tx_count": 4,
-      "volume": 1846.61,
+      "tx_count": 5,
+      "volume": 2321.33,
       "btc_close": 97007.78,
       "btc_return_1d": 0.0183,
       "btc_volatility_7d": 0.029
@@ -308,8 +308,8 @@
       "date": "2025-12-16",
       "wai": 100,
       "wai_v1": 100,
-      "tx_count": 10,
-      "volume": 5170.04,
+      "tx_count": 9,
+      "volume": 3829.39,
       "btc_close": 86413.92,
       "btc_return_1d": -0.0206,
       "btc_volatility_7d": 0.0259
