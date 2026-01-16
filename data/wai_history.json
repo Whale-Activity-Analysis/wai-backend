@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "collected_at": "2026-01-16T14:24:54.995133Z",
+    "collected_at": "2026-01-16T14:50:03.401466Z",
     "record_count": 30
   },
   "data": [
@@ -9,210 +9,300 @@
       "wai": 56,
       "wai_v1": 7,
       "tx_count": 5,
-      "volume": 1934.2
+      "volume": 1934.2,
+      "btc_close": 95584.83,
+      "btc_return_1d": -0.0147,
+      "btc_volatility_7d": 0.0307
     },
     {
       "date": "2026-01-15",
       "wai": 72,
       "wai_v1": 97,
       "tx_count": 38,
-      "volume": 45848.18
+      "volume": 45848.18,
+      "btc_close": 97007.78,
+      "btc_return_1d": 0.0183,
+      "btc_volatility_7d": 0.029
     },
     {
       "date": "2026-01-14",
       "wai": 63,
       "wai_v1": 57,
       "tx_count": 21,
-      "volume": 11649.02
+      "volume": 11649.02,
+      "btc_close": 95260.44,
+      "btc_return_1d": 0.0453,
+      "btc_volatility_7d": 0.0185
     },
     {
       "date": "2026-01-13",
       "wai": 63,
       "wai_v1": 93,
       "tx_count": 27,
-      "volume": 31247.56
+      "volume": 31247.56,
+      "btc_close": 91134.97,
+      "btc_return_1d": 0.0035,
+      "btc_volatility_7d": 0.0121
     },
     {
       "date": "2026-01-12",
       "wai": 51,
       "wai_v1": 50,
       "tx_count": 20,
-      "volume": 8082.66
+      "volume": 8082.66,
+      "btc_close": 90819.37,
+      "btc_return_1d": 0.0042,
+      "btc_volatility_7d": 0.0162
     },
     {
       "date": "2026-01-11",
       "wai": 51,
       "wai_v1": 24,
       "tx_count": 11,
-      "volume": 5210.76
+      "volume": 5210.76,
+      "btc_close": 90442.02,
+      "btc_return_1d": -0.0007,
+      "btc_volatility_7d": 0.0158
     },
     {
       "date": "2026-01-10",
       "wai": 59,
       "wai_v1": 42,
       "tx_count": 15,
-      "volume": 8853.92
+      "volume": 8853.92,
+      "btc_close": 90504.9,
+      "btc_return_1d": -0.0053,
+      "btc_volatility_7d": 0.0156
     },
     {
       "date": "2026-01-09",
       "wai": 64,
       "wai_v1": 65,
       "tx_count": 18,
-      "volume": 23594.01
+      "volume": 23594.01,
+      "btc_close": 90983.52,
+      "btc_return_1d": -0.003,
+      "btc_volatility_7d": 0.0167
     },
     {
       "date": "2026-01-08",
       "wai": 62,
       "wai_v1": 50,
       "tx_count": 21,
-      "volume": 9983.22
+      "volume": 9983.22,
+      "btc_close": 91257.16,
+      "btc_return_1d": -0.0257,
+      "btc_volatility_7d": 0.0207
     },
     {
       "date": "2026-01-07",
       "wai": 62,
       "wai_v1": 90,
       "tx_count": 18,
-      "volume": 42429.8
+      "volume": 42429.8,
+      "btc_close": 93666.86,
+      "btc_return_1d": -0.0028,
+      "btc_volatility_7d": 0.0263
     },
     {
       "date": "2026-01-06",
       "wai": 50,
       "wai_v1": 40,
       "tx_count": 15,
-      "volume": 7058.65
+      "volume": 7058.65,
+      "btc_close": 93926.8,
+      "btc_return_1d": 0.0279,
+      "btc_volatility_7d": 0.0239
     },
     {
       "date": "2026-01-05",
       "wai": 51,
       "wai_v1": 63,
       "tx_count": 16,
-      "volume": 20122.02
+      "volume": 20122.02,
+      "btc_close": 91373.22,
+      "btc_return_1d": 0.0086,
+      "btc_volatility_7d": 0.0177
     },
     {
       "date": "2026-01-04",
       "wai": 47,
       "wai_v1": 50,
       "tx_count": 6,
-      "volume": 21539.65
+      "volume": 21539.65,
+      "btc_close": 90593.85,
+      "btc_return_1d": 0.0074,
+      "btc_volatility_7d": 0.0143
     },
     {
       "date": "2026-01-03",
       "wai": 51,
       "wai_v1": 24,
       "tx_count": 8,
-      "volume": 4614.88
+      "volume": 4614.88,
+      "btc_close": 89926.28,
+      "btc_return_1d": 0.0135,
+      "btc_volatility_7d": 0.0105
     },
     {
       "date": "2026-01-02",
       "wai": 60,
       "wai_v1": 100,
       "tx_count": 21,
-      "volume": 76617.11
+      "volume": 76617.11,
+      "btc_close": 88727.67,
+      "btc_return_1d": 0.0138,
+      "btc_volatility_7d": 0.0065
     },
     {
       "date": "2026-01-01",
       "wai": 57,
       "wai_v1": 53,
       "tx_count": 9,
-      "volume": 24254.13
+      "volume": 24254.13,
+      "btc_close": 87520.18,
+      "btc_return_1d": -0.0101,
+      "btc_volatility_7d": 0.0051
     },
     {
       "date": "2025-12-31",
       "wai": 60,
       "wai_v1": 86,
       "tx_count": 23,
-      "volume": 17846.82
+      "volume": 17846.82,
+      "btc_close": 88414.63,
+      "btc_return_1d": 0.0144,
+      "btc_volatility_7d": 0.005
     },
     {
       "date": "2025-12-30",
       "wai": 52,
       "wai_v1": 46,
       "tx_count": 10,
-      "volume": 4923.95
+      "volume": 4923.95,
+      "btc_close": 87156.56,
+      "btc_return_1d": -0.0076,
+      "btc_volatility_7d": 0.0031
     },
     {
       "date": "2025-12-29",
       "wai": 54,
       "wai_v1": 100,
       "tx_count": 27,
-      "volume": 31134.46
+      "volume": 31134.46,
+      "btc_close": 87822.91,
+      "btc_return_1d": 0.0002,
+      "btc_volatility_7d": 0.0049
     },
     {
       "date": "2025-12-28",
       "wai": 38,
       "wai_v1": 27,
       "tx_count": 4,
-      "volume": 2416.47
+      "volume": 2416.47,
+      "btc_close": 87807.0,
+      "btc_return_1d": 0.0057,
+      "btc_volatility_7d": 0.0063
     },
     {
       "date": "2025-12-27",
       "wai": 45,
       "wai_v1": 20,
       "tx_count": 5,
-      "volume": 2632.09
+      "volume": 2632.09,
+      "btc_close": 87305.96,
+      "btc_return_1d": 0.0009,
+      "btc_volatility_7d": 0.0067
     },
     {
       "date": "2025-12-26",
       "wai": 54,
       "wai_v1": 22,
       "tx_count": 11,
-      "volume": 4972.75
+      "volume": 4972.75,
+      "btc_close": 87229.78,
+      "btc_return_1d": -0.0047,
+      "btc_volatility_7d": 0.0062
     },
     {
       "date": "2025-12-25",
       "wai": 61,
       "wai_v1": 12,
       "tx_count": 2,
-      "volume": 683.76
+      "volume": 683.76,
+      "btc_close": 87642.61,
+      "btc_return_1d": 0.0027,
+      "btc_volatility_7d": 0.0124
     },
     {
       "date": "2025-12-24",
       "wai": 77,
       "wai_v1": 57,
       "tx_count": 26,
-      "volume": 29195.68
+      "volume": 29195.68,
+      "btc_close": 87406.44,
+      "btc_return_1d": -0.0123,
+      "btc_volatility_7d": 0.0144
     },
     {
       "date": "2025-12-23",
       "wai": 74,
       "wai_v1": 83,
       "tx_count": 22,
-      "volume": 37467.36
+      "volume": 37467.36,
+      "btc_close": 88491.12,
+      "btc_return_1d": -0.001,
+      "btc_volatility_7d": 0.0144
     },
     {
       "date": "2025-12-22",
       "wai": 76,
       "wai_v1": 40,
       "tx_count": 20,
-      "volume": 7263.45
+      "volume": 7263.45,
+      "btc_close": 88577.42,
+      "btc_return_1d": 0.0026,
+      "btc_volatility_7d": 0.0143
     },
     {
       "date": "2025-12-21",
       "wai": 81,
       "wai_v1": 75,
       "tx_count": 25,
-      "volume": 26710.84
+      "volume": 26710.84,
+      "btc_close": 88347.94,
+      "btc_return_1d": 0.0028,
+      "btc_volatility_7d": 0.0137
     },
     {
       "date": "2025-12-20",
       "wai": 83,
       "wai_v1": 33,
       "tx_count": 4,
-      "volume": 21100.82
+      "volume": 21100.82,
+      "btc_close": 88103.86,
+      "btc_return_1d": 0.0311,
+      "btc_volatility_7d": 0.0187
     },
     {
       "date": "2025-12-19",
       "wai": 100,
       "wai_v1": 100,
       "tx_count": 34,
-      "volume": 28832.04
+      "volume": 28832.04,
+      "btc_close": 85450.33,
+      "btc_return_1d": -0.0071,
+      "btc_volatility_7d": 0.0223
     },
     {
       "date": "2025-12-18",
       "wai": 100,
       "wai_v1": 100,
       "tx_count": 18,
-      "volume": 7345.4
+      "volume": 7345.4,
+      "btc_close": 86064.95,
+      "btc_return_1d": -0.02,
+      "btc_volatility_7d": 0.0262
     }
   ]
 }
