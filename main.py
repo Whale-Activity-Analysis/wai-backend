@@ -24,7 +24,7 @@ app = FastAPI(
 # CORS Middleware hinzufügen (für Frontend-Integration)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In Production: spezifische Origins angeben
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "https://whale-activity-analysis.github.io"],  # In Production: spezifische Origins angeben
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
