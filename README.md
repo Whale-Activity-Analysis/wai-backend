@@ -12,33 +12,33 @@ Der WAI v2 verbessert die ursprüngliche Methodik durch dynamische Anpassung an 
 
 **1. Adaptive Normalisierung**
 ```
-T̂_d = T_d / Median_30(T)
-V̂_d = V_d / Median_30(V)
+Normalisierte_Transaktionen = Tagestransaktionen / Median_50(Transaktionen)
+Normalisiertes_Volumen = Tagesvolumen / Median_50(Volumen)
 ```
 
-Die Basislinie verwendet rollierenden Median für maximale Robustheit gegen Ausreißer.
+Die Basislinie verwendet einen 50-Tage rollierenden Median für maximale Robustheit gegen Ausreißer.
 
 **2. Volatilitätsabhängige Gewichtung**
 
 Anstatt fixer 50/50-Gewichte werden die Komponenten dynamisch gewichtet:
 
 ```
-vol_std_percentile = PercentileRank(std(V̂), window=30)
-weight_volume = vol_std_percentile
-weight_tx = 1 - weight_volume
+Volatilitäts_Perzentil = PercentileRank(std(Normalisiertes_Volumen), window=50)
+Gewicht_Volumen = Volatilitäts_Perzentil
+Gewicht_Transaktionen = 1 - Volatilitäts_Perzentil
 
-WAI_raw = weight_tx · T̂_d + weight_volume · V̂_d
+WAI_roh = Gewicht_Transaktionen × Normalisierte_Transaktionen + Gewicht_Volumen × Normalisiertes_Volumen
 ```
 
 **Logik:** 
-- Hohe Volumen-Volatilität → TX-Count wird stärker gewichtet
+- Hohe Volumen-Volatilität → Transaktionsanzahl wird stärker gewichtet
 - Stabile Volumen-Daten → Volumen wird stärker gewichtet
 
 **3. Historisch adaptive Skalierung**
 
 ```
-WAI_percentile = PercentileRank(WAI_raw, window=180)
-WAI_index = round(WAI_percentile × 100)
+WAI_Perzentil = PercentileRank(WAI_roh, window=180)
+WAI_Index = round(WAI_Perzentil × 100)
 ```
 
 - **Wertebereich**: [0, 100]
@@ -110,13 +110,13 @@ Der Server läuft dann auf: `http://localhost:8000`
 
 ## API Endpoints
 
-### 📊 Swagger Dokumentation
+### Swagger Dokumentation
 - **GET** `/docs` - Interaktive API-Dokumentation
 
-### 🔍 Health Check
+### Health Check
 - **GET** `/health` - Server Status
 
-### 📈 WAI Endpoints
+### WAI Endpoints
 
 #### Aktuellster WAI-Wert
 ```

@@ -6,7 +6,7 @@
 
 Die erste WAI-Version basiert auf einer linearen Skalierung mit statischen Gewichten (0.5 / 0.5):
 
-$$\text{WAI}_{\text{v1}} = \text{round}(100 \cdot (0.5 \cdot \hat{T}_d + 0.5 \cdot \hat{V}_d))$$
+$$\text{WAI}_{\text{v1}} = \text{round}(100 \cdot (0.5 \cdot \text{Norm}_\text{TX} + 0.5 \cdot \text{Norm}_\text{Vol}))$$
 
 Diese Formulierung weist mehrere konzeptionelle Schwächen auf:
 
@@ -30,52 +30,48 @@ Die neue Version adressiert diese Limitationen durch:
 ### 2.1 Input-Normalisierung
 
 Gegeben sei eine Zeitserie von Whale-Metriken für Tag $d$:
-- $T_d$ = Anzahl Whale-Transaktionen
-- $V_d$ = Gesamtvolumen Whale-Transaktionen (BTC)
+- $\text{Tagestransaktionen}_d$ = Anzahl Whale-Transaktionen
+- $\text{Tagesvolumen}_d$ = Gesamtvolumen Whale-Transaktionen (BTC)
 
-Die Normalisierung erfolgt durch eine Median-Basislinie $B(.)$:
+Die Normalisierung erfolgt durch eine Median-Basislinie über 50 Tage:
 
-$$\hat{T}_d = \frac{T_d}{B_T(d)}$$
+$$\text{Norm}_\text{TX}(d) = \frac{\text{Tagestransaktionen}_d}{\text{Median}_{50}(\text{Transaktionen})}$$
 
-$$\hat{V}_d = \frac{V_d}{B_V(d)}$$
+$$\text{Norm}_\text{Vol}(d) = \frac{\text{Tagesvolumen}_d}{\text{Median}_{50}(\text{Volumen})}$$
 
-wobei $B(d)$ die Median-Basislinie zum Zeitpunkt $d$ darstellt:
-
-$$B_T(d) = \text{Median}_{30}(T)$$
-
-$$B_V(d) = \text{Median}_{30}(V)$$
+wobei $\text{Median}_{50}$ der 50-Tage rollierende Median ist.
 
 ### 2.2 Volatilitätsabhängige Gewichtung
 
 Die Volatilität der Volumen-Normalisierung wird quantifiziert als:
 
-$$\sigma_V(d) = \text{std}(\hat{V}_{[d-29:d]})$$
+$$\text{Volatilität}_\text{Vol}(d) = \text{std}(\text{Norm}_\text{Vol}_{[d-49:d]})$$
 
-Normalisierung der Volatilität auf [0,1] via Percentile Rank innerhalb eines 30-Tage-Fensters:
+Normalisierung der Volatilität auf [0,1] via Percentile Rank innerhalb eines 50-Tage-Fensters:
 
-$$\rho_{\sigma}(d) = \text{PercentileRank}(\sigma_V(d), \text{window}=30)$$
+$$\text{Volatilitäts-Perzentil}(d) = \text{PercentileRank}(\text{Volatilität}_\text{Vol}(d), \text{window}=50)$$
 
 Die dynamischen Gewichte ergeben sich aus:
 
-$$w_V(d) = \rho_{\sigma}(d)$$
+$$\text{Gewicht}_\text{Vol}(d) = \text{Volatilitäts-Perzentil}(d)$$
 
-$$w_T(d) = 1 - \rho_{\sigma}(d)$$
+$$\text{Gewicht}_\text{TX}(d) = 1 - \text{Volatilitäts-Perzentil}(d)$$
 
 **Interpretation:** Höhere Volumen-Volatilität führt zu geringerem Volumen-Gewicht, da Transaktionszahlen zuverlässiger sind.
 
 ### 2.3 Gewichtete Rohindex-Berechnung
 
-$$\text{WAI}_{\text{raw}}(d) = w_T(d) \cdot \hat{T}_d + w_V(d) \cdot \hat{V}_d$$
+$$\text{WAI}_{\text{roh}}(d) = \text{Gewicht}_\text{TX}(d) \cdot \text{Norm}_\text{TX}(d) + \text{Gewicht}_\text{Vol}(d) \cdot \text{Norm}_\text{Vol}(d)$$
 
-wobei $w_T(d) + w_V(d) = 1$ für alle $d$.
+wobei $\text{Gewicht}_\text{TX}(d) + \text{Gewicht}_\text{Vol}(d) = 1$ für alle $d$.
 
 ### 2.4 Historisch adaptive Skalierung
 
 Der Rohindex wird normalisiert auf [0, 1] via 180-Tage Percentile Rank:
 
-$$\text{WAI}_{\text{percentile}}(d) = \text{PercentileRank}(\text{WAI}_{\text{raw}}(d), \text{window}=180)$$
+$$\text{WAI}_{\text{Perzentil}}(d) = \text{PercentileRank}(\text{WAI}_{\text{roh}}(d), \text{window}=180)$$
 
-Diese Funktion berechnet den Rang des aktuellen Wertes $\text{WAI}_{\text{raw}}(d)$ innerhalb der letzten 180 Werte:
+Diese Funktion berechnet den Rang des aktuellen Wertes $\text{WAI}_{\text{roh}}(d)$ innerhalb der letzten 180 Werte:
 
 $$\text{PercentileRank}(x, W) = \frac{\#\{w \in W : w \leq x\}}{|W|}$$
 
@@ -83,17 +79,17 @@ $$\text{PercentileRank}(x, W) = \frac{\#\{w \in W : w \leq x\}}{|W|}$$
 
 Die finale Indexskalierung auf [0, 100] erfolgt linear:
 
-$$\text{WAI}_{\text{v2}}(d) = \text{round}(100 \cdot \text{WAI}_{\text{percentile}}(d))$$
+$$\text{WAI}_{\text{v2}}(d) = \text{round}(100 \cdot \text{WAI}_{\text{Perzentil}}(d))$$
 
 **Resultat:** $\text{WAI}_{\text{v2}} \in [0, 100]$ als Ganzzahl.
 
 ### 2.6 Kompakte Formulierung
 
-$$\text{WAI}_{\text{v2}}(d) = \text{round}\left(100 \cdot \text{PR}_{180}\left(w_T(d) \cdot \hat{T}_d + w_V(d) \cdot \hat{V}_d\right)\right)$$
+$$\text{WAI}_{\text{v2}}(d) = \text{round}\left(100 \cdot \text{PR}_{180}\left(\text{Gewicht}_\text{TX}(d) \cdot \text{Norm}_\text{TX}(d) + \text{Gewicht}_\text{Vol}(d) \cdot \text{Norm}_\text{Vol}(d)\right)\right)$$
 
 wobei:
 - $\text{PR}_{w}(x)$ = Percentile Rank mit Fenster-Größe $w$
-- $w_T(d) = 1 - \text{PR}_{30}(\text{std}(\hat{V}_{[d-29:d]}))$
+- $\text{Gewicht}_\text{TX}(d) = 1 - \text{PR}_{50}(\text{std}(\text{Norm}_\text{Vol}_{[d-49:d]}))$
 
 ---
 
@@ -133,9 +129,9 @@ Die Wahl von Fenster-Größen ist nicht vollständig theoretisch begründet:
 
 | Parameter | Wert | Begründung | Sensitivität |
 |-----------|------|-----------|--------------|
-| MEDIAN_WINDOW | 30 | Konvention (~1 Monat) | Hoch |
+| MEDIAN_WINDOW | 50 | Optimiert (~7 Wochen) | Hoch |
 | PERCENTILE_WINDOW | 180 | Konvention (~6 Monate) | Hoch |
-| VOLATILITY_WINDOW | 30 | MEDIAN_WINDOW | Mittel |
+| VOLATILITY_WINDOW | 50 | MEDIAN_WINDOW | Mittel |
 
 Eine empirische Optimierung (z.B. via Sharpe Ratio) wäre wünschenswert.
 
