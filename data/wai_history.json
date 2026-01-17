@@ -1,22 +1,22 @@
 {
   "metadata": {
-    "collected_at": "2026-01-17T22:43:38.901127Z",
+    "collected_at": "2026-01-17T23:19:51.136867Z",
     "record_count": 30
   },
   "data": [
     {
       "date": "2026-01-17",
-      "wai": 64,
-      "wai_v1": 43,
-      "tx_count": 12,
-      "volume": 16456.43,
+      "wai": 65,
+      "wai_v1": 47,
+      "tx_count": 13,
+      "volume": 16928.65,
       "btc_close": 95516.08,
       "btc_return_1d": -0.0007,
       "btc_volatility_7d": 0.0295
     },
     {
       "date": "2026-01-16",
-      "wai": 72,
+      "wai": 73,
       "wai_v1": 55,
       "tx_count": 20,
       "volume": 12474.4,
@@ -46,7 +46,7 @@
     },
     {
       "date": "2026-01-13",
-      "wai": 68,
+      "wai": 69,
       "wai_v1": 92,
       "tx_count": 27,
       "volume": 31247.56,
@@ -57,7 +57,7 @@
     {
       "date": "2026-01-12",
       "wai": 58,
-      "wai_v1": 56,
+      "wai_v1": 60,
       "tx_count": 20,
       "volume": 8082.66,
       "btc_close": 90819.37,
@@ -86,8 +86,8 @@
     },
     {
       "date": "2026-01-09",
-      "wai": 73,
-      "wai_v1": 73,
+      "wai": 72,
+      "wai_v1": 68,
       "tx_count": 18,
       "volume": 23594.01,
       "btc_close": 90983.52,
@@ -96,7 +96,7 @@
     },
     {
       "date": "2026-01-08",
-      "wai": 71,
+      "wai": 70,
       "wai_v1": 52,
       "tx_count": 21,
       "volume": 9983.22,
@@ -127,7 +127,7 @@
     {
       "date": "2026-01-05",
       "wai": 62,
-      "wai_v1": 67,
+      "wai_v1": 61,
       "tx_count": 16,
       "volume": 20122.02,
       "btc_close": 91373.22,
@@ -177,7 +177,7 @@
     {
       "date": "2025-12-31",
       "wai": 66,
-      "wai_v1": 85,
+      "wai_v1": 92,
       "tx_count": 23,
       "volume": 17846.82,
       "btc_close": 88414.63,
@@ -298,8 +298,8 @@
       "date": "2025-12-19",
       "wai": 100,
       "wai_v1": 100,
-      "tx_count": 25,
-      "volume": 11754.99,
+      "tx_count": 24,
+      "volume": 10754.12,
       "btc_close": 85450.33,
       "btc_return_1d": -0.0071,
       "btc_volatility_7d": 0.0223
