@@ -1,22 +1,22 @@
 {
   "metadata": {
-    "collected_at": "2026-01-18T07:20:22.167660Z",
+    "collected_at": "2026-01-18T07:40:33.334890Z",
     "record_count": 31
   },
   "data": [
     {
       "date": "2026-01-18",
-      "wai": 50,
+      "wai": 49,
       "wai_v1": 3,
-      "tx_count": 0,
-      "volume": 0.0,
+      "tx_count": 1,
+      "volume": 209.74,
       "btc_close": 95099.53,
       "btc_return_1d": -0.0044,
       "btc_volatility_7d": 0.0253
     },
     {
       "date": "2026-01-17",
-      "wai": 66,
+      "wai": 64,
       "wai_v1": 47,
       "tx_count": 14,
       "volume": 17400.76,
@@ -66,7 +66,7 @@
     },
     {
       "date": "2026-01-12",
-      "wai": 58,
+      "wai": 57,
       "wai_v1": 60,
       "tx_count": 20,
       "volume": 8082.66,
@@ -97,7 +97,7 @@
     {
       "date": "2026-01-09",
       "wai": 70,
-      "wai_v1": 68,
+      "wai_v1": 64,
       "tx_count": 18,
       "volume": 23594.01,
       "btc_close": 90983.52,
@@ -116,7 +116,7 @@
     },
     {
       "date": "2026-01-07",
-      "wai": 69,
+      "wai": 68,
       "wai_v1": 90,
       "tx_count": 18,
       "volume": 42429.8,
@@ -126,8 +126,8 @@
     },
     {
       "date": "2026-01-06",
-      "wai": 58,
-      "wai_v1": 42,
+      "wai": 57,
+      "wai_v1": 37,
       "tx_count": 15,
       "volume": 7058.65,
       "btc_close": 93926.8,
@@ -136,7 +136,7 @@
     },
     {
       "date": "2026-01-05",
-      "wai": 60,
+      "wai": 59,
       "wai_v1": 61,
       "tx_count": 16,
       "volume": 20122.02,
@@ -308,8 +308,8 @@
       "date": "2025-12-19",
       "wai": 100,
       "wai_v1": 100,
-      "tx_count": 23,
-      "volume": 10546.14,
+      "tx_count": 22,
+      "volume": 9996.14,
       "btc_close": 85450.33,
       "btc_return_1d": -0.0071,
       "btc_volatility_7d": 0.0223
