@@ -1,113 +1,12 @@
-# WAI Backend - Whale Activity & Intent Index
+# WAI Backend
 
-Wissenschaftliche On-Chain-Analyse für Bitcoin Whale-Aktivität
+Whale Activity Index (WAI) v2 - Backend Service
 
-## Übersicht
+## Beschreibung
 
-Das WAI Backend ist ein hochentwickeltes Analyse-System, das zwei komplementäre Indizes berechnet:
+Dieses Backend berechnet den **Whale Activity Index (WAI v2)**, der die Aktivität von großen Bitcoin-Transaktionen ("Whales") analysiert. Der Index verwendet **volatilitätsabhängige Gewichtung** und **historisch adaptive Skalierung** für eine robuste Signalqualität.
 
-- **WAI (Whale Activity Index):** Misst die Aktivität von Bitcoin-Whales
-- **WII (Whale Intent Index):** Analysiert die Absichten durch Exchange-Flows
-
-**Differenzierungsmerkmal:** Wissenschaftliche Auswertung mit Lead-Lag-Analyse, Regime Detection und Conditional Volatility.
-
-## Features
-
-✅ **Whale Activity Index (WAI v2)**
-- Volatilitätsabhängige dynamische Gewichtung
-- Historisch adaptive Skalierung (180-Tage Percentile)
-- EMA-Smoothing für Stabilität
-
-✅ **Whale Intent Index (WII)**
-- Exchange-Flow-Analyse (Inflow/Outflow)
-- Akkumulations- vs. Distributions-Signale
-- Leading Indicator (1-3 Tage voraus)
-
-✅ **Wissenschaftliche Analysen**
-- Lead-Lag-Korrelationen
-- Regime Detection (K-Means Clustering)
-- Conditional Volatility
-- Kombinierte Auswertungen
-
-## Schnellstart
-
-### Installation
-
-```bash
-# Virtual Environment
-python -m venv venv
-.\venv\Scripts\activate  # Windows
-source venv/bin/activate  # Linux/Mac
-
-# Dependencies
-pip install -r requirements.txt
-
-# Server starten
-python main.py
-```
-
-Server läuft auf: http://localhost:8000
-
-### API-Dokumentation
-
-Interaktive Docs: http://localhost:8000/docs
-
-## API-Endpunkte
-
-### WAI (Whale Activity Index)
-
-```bash
-# Aktuellster WAI-Wert
-GET /api/wai/latest
-
-# WAI-Historie
-GET /api/wai/history?start_date=2026-01-01&limit=30
-
-# Statistiken
-GET /api/wai/statistics
-```
-
-### WII (Whale Intent Index)
-
-```bash
-# Aktuellster WII-Wert
-GET /api/wii/latest
-
-# WII-Historie
-GET /api/wii/history?start_date=2026-01-01&limit=30
-```
-
-### Wissenschaftliche Analysen
-
-```bash
-# Lead-Lag-Analyse: Folgt Preis auf Whale-Flows?
-GET /api/analysis/lead-lag?max_lag=7
-
-# Regime Detection: Aktuelle Marktphase
-GET /api/analysis/regime-detection
-
-# Conditional Volatility: Flow-abhängige Volatilität
-GET /api/analysis/conditional-volatility
-
-# Gesamtauswertung (empfohlen)
-GET /api/analysis/scientific-summary
-```
-
-## Dokumentation
-
-### Methodologie
-
-- **[WII_DOCUMENTATION.md](WII_DOCUMENTATION.md)** - Whale Intent Index Details
-- **[SCIENTIFIC_ANALYSIS.md](SCIENTIFIC_ANALYSIS.md)** - Phase 6: Wissenschaftliche Auswertung
-- **[TECHNICAL_DOCUMENTATION.md](TECHNICAL_DOCUMENTATION.md)** - Technische Dokumentation
-
-### Analysen
-
-- **[analysis/whale_intent_index.md](analysis/whale_intent_index.md)** - WII Methodologie & Validierung
-- **[analysis/wai_vs_wii_comparison.md](analysis/wai_vs_wii_comparison.md)** - WAI vs. WII Vergleich
-- **[analysis/wai_comparison_evaluation.md](analysis/wai_comparison_evaluation.md)** - WAI v1 vs. v2
-
-## WAI Methodik (v2)
+### Methodik (WAI v2)
 
 Der WAI v2 verbessert die ursprüngliche Methodik durch dynamische Anpassung an Marktbedingungen:
 
@@ -147,131 +46,57 @@ WAI_Index = round(WAI_Perzentil × 100)
 - WAI = 50 bedeutet Median-Aktivität
 - WAI > 80 bedeutet außergewöhnlich hohe Aktivität
 
-**4. EMA-Smoothing**
+**4. EMA-Smoothing gegen Ausschläge**
 
-Nach der Skalierung wird der Index durch exponentielle Glättung über 7 Tage beruhigt:
+Nach der Skalierung wird der Index durch **exponentielle Glättung** über 7 Tage beruhigt:
 
 ```
 WAI_final = EMA_7(WAI_scaled)
 ```
 
-Reduziert tägliche Volatilität bei Erhalt der Trends.
+**Was bedeutet das?** Stell dir vor, die Werte wären Punkte auf einem Papier:
+- **Ohne Smoothing**: Wenn an Tag A plötzlich 100 Whale-Transaktionen kommen, springt der Index von 45 auf 92, dann Tag darauf wieder auf 38. Zappelig!
+- **Mit EMA-Smoothing**: Der Index bewegt sich sanfter. Ein Ausreißer beeinflusst nicht nur einen Tag, sondern wird über mehrere Tage "verteilt". Neuere Tage haben mehr Gewicht, daher reagiert der Index schnell, aber nicht übertrieben.
 
-## WII Methodik
+**Resultat:** Der WAI wird weniger von einzelnen extremen Tagen verzerrt → zuverlässigere Signale für Nutzer.
 
-Der **Whale Intent Index** analysiert Exchange-Flows:
+## Installation
 
-```
-1. Netflow Ratio = (Outflow - Inflow) / (Outflow + Inflow)
-2. Normalisierung: [-1, 1] → [0, 1]
-3. Percentile: WII = PercentileRank₁₈₀(normalized) × 100
-4. Smoothing: EMA₇(WII)
-```
-
-**Interpretation:**
-- WII < 30: Selling Pressure (Inflow zu Exchanges)
-- WII 30-70: Neutral
-- WII > 70: Accumulation (Outflow von Exchanges)
-
-## Wissenschaftliche Analysen
-
-### Lead-Lag-Analyse
-
-Beantwortet: **"Folgt der Preis auf Whale-Flows?"**
-
-- Zeitverzögerte Korrelationen (0-7+ Tage)
-- Identifiziert: Ist Inflow bearish? Ist Outflow bullish?
-
-### Regime Detection
-
-K-Means Clustering identifiziert 4 Marktphasen:
-1. Bull Market (WAI↑ + WII↑)
-2. Distribution (WAI↑ + WII↓)
-3. Stealth Accumulation (WAI↓ + WII↑)
-4. Capitulation (WAI↓ + WII↓)
-
-### Conditional Volatility
-
-Untersucht Flow-abhängige Volatilität:
-- Erhöhen hohe Inflows die Volatilität?
-- Ist Verkaufsdruck volatiler als Akkumulation?
-
-## Beispiel-Response
-
-```json
-{
-  "date": "2026-01-19",
-  "wai": 67,
-  "wii": 45,
-  "wii_signal": "neutral",
-  "tx_count": 10,
-  "volume": 3320.58,
-  "exchange_inflow": 514.84,
-  "exchange_outflow": 262.97,
-  "exchange_netflow": -251.87,
-  "btc_close": 104500.23
-}
-```
-
-## Technologie-Stack
-
-- **FastAPI** - Moderne async Web-Framework
-- **Pandas** - Datenanalyse
-- **NumPy** - Numerische Berechnungen
-- **scikit-learn** - Machine Learning (Regime Detection)
-- **httpx** - Async HTTP-Client
-
-## Deployment
-
-### Docker
+### 1. Virtual Environment erstellen
 
 ```bash
-docker build -t wai-backend .
-docker run -p 8000:8000 wai-backend
+python -m venv venv
 ```
 
-### Umgebungsvariablen
+### 2. Virtual Environment aktivieren
 
-Erstelle `.env`:
-```env
-HOST=0.0.0.0
-PORT=8000
-DEBUG=False
-MEDIAN_WINDOW=50
-WAI_SMOOTHING_WINDOW=7
-WII_SMOOTHING_WINDOW=7
+**Windows:**
+```bash
+venv\Scripts\activate
 ```
 
-## Projektstruktur
-
-```
-wai-backend/
-├── main.py                    # FastAPI App & Endpoints
-├── wai_service.py            # WAI/WII Berechnung & Analysen
-├── config.py                 # Konfiguration
-├── requirements.txt          # Dependencies
-├── README.md                 # Diese Datei
-├── WII_DOCUMENTATION.md      # WII Details
-├── SCIENTIFIC_ANALYSIS.md    # Phase 6 Analysen
-├── analysis/                 # Dokumentation
-│   ├── whale_intent_index.md
-│   ├── wai_vs_wii_comparison.md
-│   └── wai_comparison_evaluation.md
-└── data/                     # Historische Daten
+**Linux/Mac:**
+```bash
+source venv/bin/activate
 ```
 
-## Lizenz
+### 3. Dependencies installieren
 
-MIT License
+```bash
+pip install -r requirements.txt
+```
 
-## Kontakt & Support
+## Server starten
 
-Bei Fragen zur Methodologie siehe Dokumentation im `/analysis` Ordner.
+### Option 1: Lokal mit Python
 
----
+```bash
+python main.py
+```
 
-**Differenzierungsmerkmal:** Dieses System kombiniert nicht nur Indikatoren, sondern liefert wissenschaftlich validierte, quantifizierbare Erkenntnisse über Whale-Verhalten und deren Marktauswirkungen.
+### Option 2: Mit Docker (Empfohlen)
 
+```bash
 # Mit Docker Compose
 docker-compose up -d
 
