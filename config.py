@@ -28,6 +28,11 @@ class Config:
     WAI_MIN = int(os.getenv("WAI_MIN", 0))
     WAI_MAX = int(os.getenv("WAI_MAX", 100))
     
+    # WII (Whale Intent Index) Calculation Parameters
+    WII_SMOOTHING_WINDOW = int(os.getenv("WII_SMOOTHING_WINDOW", 7))  # EMA fuer Glaettung
+    WII_MIN = int(os.getenv("WII_MIN", 0))
+    WII_MAX = int(os.getenv("WII_MAX", 100))
+    
     # BTC Data Source
     BTC_DATA_URL = os.getenv(
         "BTC_DATA_URL",
