@@ -1,15 +1,15 @@
 {
   "metadata": {
-    "collected_at": "2026-01-20T18:38:07.640753Z",
+    "collected_at": "2026-01-20T20:12:37.301577Z",
     "record_count": 30
   },
   "data": [
     {
       "date": "2026-01-20",
-      "wai": 37,
-      "wai_v1": 20,
-      "tx_count": 4,
-      "volume": 2558.36,
+      "wai": 40,
+      "wai_v1": 27,
+      "tx_count": 6,
+      "volume": 3642.2,
       "btc_close": 92558.46,
       "btc_return_1d": -0.0127,
       "btc_volatility_7d": 0.015
