@@ -1,5 +1,5 @@
 btc_close,btc_return_1d,btc_volatility_7d,date,exchange_inflow,exchange_netflow,exchange_outflow,netflow_ratio,tx_count,volume,wai,wai_v1,wii,wii_signal
-88312.84,-0.0459,0.0306,2026-01-21,0.0,0.0,0.0,0.0,6,3761.91,40,26,75,accumulation
+88312.84,-0.0459,0.0306,2026-01-21,0.0,0.0,0.0,0.0,7,4012.05,40,29,75,accumulation
 92558.46,-0.0127,0.015,2026-01-20,0.0,0.0,0.0,0.0,9,4902.94,43,43,68,neutral
 93752.71,-0.0142,0.0197,2026-01-19,514.84,-251.87,262.97,-0.3238,10,3320.58,43,34,60,neutral
 95099.53,-0.0044,0.0253,2026-01-18,0.0,0.0,0.0,0.0,2,732.94,46,7,76,accumulation
