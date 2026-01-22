@@ -46,12 +46,9 @@ async def root():
             "latest": "/api/wai/latest (inkl. WII)",
             "history": "/api/wai/history (inkl. WII)",
             "statistics": "/api/wai/statistics (inkl. WII)",
-            "analysis_lead_lag": "/api/analysis/lead-lag",
-            "analysis_regime": "/api/analysis/regime-detection",
-            "analysis_volatility": "/api/analysis/conditional-volatility",
-            "analysis_summary": "/api/analysis/scientific-summary",
             "health": "/health"
-        }
+        },
+        "note": "Für wissenschaftliche Analysen siehe /analysis Ordner (Python-Skripte)"
     }
 
 
@@ -257,126 +254,6 @@ async def get_wai_comparison():
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Fehler beim Vergleich: {str(e)}")
-
-
-@app.get("/api/analysis/lead-lag")
-async def get_lead_lag_analysis(
-    max_lag: Optional[int] = Query(7, ge=1, le=30, description="Maximale Anzahl Tage für Lag-Analyse (1-30)")
-):
-    """
-    Lead-Lag-Analyse: Folgt der BTC-Preis auf Whale-Flows?
-    
-    Wissenschaftliche Analyse zeitverzögerter Korrelationen zwischen:
-    - Exchange Inflow/Outflow und BTC-Returns
-    - WAI/WII und BTC-Returns
-    
-    Beantwortet Fragen:
-    - Ist Inflow bearish?
-    - Ist Outflow bullish?
-    - Folgt Preis auf Whale-Flow?
-    
-    Query Parameters:
-        - max_lag: Maximale Anzahl Tage für Lag-Analyse (Standard: 7)
-    
-    Returns:
-        Detaillierte Korrelationsanalysen mit Best-Lag-Identifikation
-    """
-    try:
-        result = await wai_service.calculate_lead_lag_analysis(max_lag=max_lag)
-        return result
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Fehler bei Lead-Lag-Analyse: {str(e)}")
-
-
-@app.get("/api/analysis/regime-detection")
-async def get_regime_detection():
-    """
-    Regime Detection: Identifiziert verschiedene Marktphasen
-    
-    Verwendet K-Means Clustering auf:
-    - WAI (Aktivität)
-    - WII (Intent)
-    - BTC Volatilität
-    
-    Identifiziert Regimes wie:
-    - Bull Market (Hohe Aktivität + Akkumulation)
-    - Distribution Phase (Hohe Aktivität + Verkaufsdruck)
-    - Stealth Accumulation (Niedrige Aktivität + Akkumulation)
-    - Capitulation (Niedrige Aktivität + Verkaufsdruck)
-    
-    Returns:
-        Regime-Klassifizierung mit Charakteristiken und aktuellem Regime
-    """
-    try:
-        result = await wai_service.calculate_regime_detection()
-        return result
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Fehler bei Regime Detection: {str(e)}")
-
-
-@app.get("/api/analysis/conditional-volatility")
-async def get_conditional_volatility():
-    """
-    Conditional Volatility: Volatilität abhängig von Whale-Flows
-    
-    Untersucht, ob und wie Whale-Flows die Marktvolatilität beeinflussen:
-    - Volatilität nach WII-Signal (selling_pressure, neutral, accumulation)
-    - Volatilität bei hohen Inflows vs. Outflows
-    - Korrelation zwischen Flows und Volatilität
-    
-    Beantwortet:
-    - Erhöhen hohe Inflows die Volatilität?
-    - Ist Verkaufsdruck volatiler als Akkumulation?
-    
-    Returns:
-        Detaillierte Volatilitätsanalysen konditioniert auf Whale-Aktivität
-    """
-    try:
-        result = await wai_service.calculate_conditional_volatility()
-        return result
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Fehler bei Conditional Volatility: {str(e)}")
-
-
-@app.get("/api/analysis/scientific-summary")
-async def get_scientific_summary():
-    """
-    Wissenschaftliche Gesamtauswertung: Alle Analysen kombiniert
-    
-    Liefert eine umfassende wissenschaftliche Analyse mit:
-    1. Lead-Lag-Analyse (Preis folgt Flows?)
-    2. Regime Detection (Aktuelle Marktphase)
-    3. Conditional Volatility (Flow-abhängige Volatilität)
-    
-    Dies ist das Differenzierungsmerkmal des Systems!
-    
-    Returns:
-        Kombinierte wissenschaftliche Auswertung mit Key Findings
-    """
-    try:
-        # Parallele Ausführung der Analysen
-        lead_lag = await wai_service.calculate_lead_lag_analysis()
-        regime = await wai_service.calculate_regime_detection()
-        cond_vol = await wai_service.calculate_conditional_volatility()
-        
-        return {
-            'title': 'Wissenschaftliche Whale-Flow-Analyse',
-            'description': 'Umfassende statistische Auswertung der Whale-Aktivität und Marktauswirkungen',
-            'analyses': {
-                'lead_lag_analysis': lead_lag,
-                'regime_detection': regime,
-                'conditional_volatility': cond_vol
-            },
-            'executive_summary': {
-                'inflow_effect': 'Bearish' if lead_lag.get('key_findings', {}).get('inflow_bearish', False) else 'Nicht signifikant bearish',
-                'outflow_effect': 'Bullish' if lead_lag.get('key_findings', {}).get('outflow_bullish', False) else 'Nicht signifikant bullish',
-                'current_market_regime': regime.get('current_regime', {}).get('interpretation', 'Unbekannt'),
-                'wii_predictive_power': 'Hoch' if lead_lag.get('key_findings', {}).get('wii_predictive', False) else 'Mittel bis Niedrig',
-                'best_predictor': lead_lag.get('key_findings', {}).get('best_predictor', 'Unbekannt')
-            }
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Fehler bei wissenschaftlicher Auswertung: {str(e)}")
 
 
 # Hauptfunktion zum Starten des Servers

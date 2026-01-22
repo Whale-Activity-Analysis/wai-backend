@@ -85,18 +85,16 @@ GET /api/wai/statistics
 ### Wissenschaftliche Analysen
 
 ```bash
-# Lead-Lag-Analyse: Folgt Preis auf Whale-Flows?
-GET /api/analysis/lead-lag?max_lag=7
-
-# Regime Detection: Aktuelle Marktphase
-GET /api/analysis/regime-detection
-
-# Conditional Volatility: Flow-abhängige Volatilität
-GET /api/analysis/conditional-volatility
-
-# Gesamtauswertung (empfohlen)
-GET /api/analysis/scientific-summary
+# Lead-Lag-Analyse, Regime Detection, Conditional Volatility
+python analysis/wii_analysis.py
 ```
+
+Das Skript analysiert:
+- **Lead-Lag:** Folgt Preis auf Whale-Flows?
+- **Regime Detection:** Marktphasen (Bull/Distribution/Stealth/Capitulation)
+- **Conditional Volatility:** Flow-abhängige Volatilität
+
+Ergebnisse optional als JSON speicherbar.
 
 ## Dokumentation
 
@@ -255,14 +253,14 @@ WII_SMOOTHING_WINDOW=7
 
 ```
 wai-backend/
-├── main.py                    # FastAPI App & Endpoints
-├── wai_service.py            # WAI/WII Berechnung & Analysen
+├── main.py                    # FastAPI App & API-Endpoints
+├── wai_service.py            # WAI/WII Berechnung
 ├── config.py                 # Konfiguration
 ├── requirements.txt          # Dependencies
 ├── README.md                 # Diese Datei
-├── WII_DOCUMENTATION.md      # WII Details
-├── SCIENTIFIC_ANALYSIS.md    # Phase 6 Analysen
-├── analysis/                 # Dokumentation
+├── analysis/                 # Analysen & Dokumentation
+│   ├── wii_analysis.py       # WII Wissenschaftliche Analyse (Skript)
+│   ├── wai_index_validation.py  # WAI Validierung
 │   ├── whale_intent_index.md
 │   ├── wai_vs_wii_comparison.md
 │   └── wai_comparison_evaluation.md
