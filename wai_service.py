@@ -296,16 +296,16 @@ class WAIService:
         # Netflow-Ratio berechnen: (Outflow - Inflow) / Total
         # Handling von Division durch 0 und fehlenden Daten
         total_flow = result['exchange_outflow_btc'] + result['exchange_inflow_btc']
-        
+
         # Netflow berechnen (bereits vorhanden, aber wir berechnen neu zur Sicherheit)
         result['netflow'] = result['exchange_outflow_btc'] - result['exchange_inflow_btc']
-        
+
         # Netflow Ratio: [-1, 1]
         # -1 = Nur Inflow, +1 = Nur Outflow
         result['netflow_ratio'] = 0.0  # Default für Tage ohne Exchange-Aktivität
         mask = total_flow > 0
         result.loc[mask, 'netflow_ratio'] = result.loc[mask, 'netflow'] / total_flow[mask]
-        
+
         # Normalisierung auf [0, 1] für bessere Interpretation
         # 0 = Maximaler Verkaufsdruck, 1 = Maximale Akkumulation
         result['wii_normalized'] = (result['netflow_ratio'] + 1) / 2
@@ -320,15 +320,21 @@ class WAIService:
             result['wii_normalized'],
             window=180
         )
-        
+
         # Skaliere auf [0, 100] und runde
         result['wii_scaled'] = (result['wii_percentile'] * 100).round()
-        
-        # Smoothing mit EMA für weniger Ausschläge
-        result['wii'] = result['wii_scaled'].ewm(
-            span=self.WII_SMOOTHING_WINDOW, 
-            adjust=False
-        ).mean().round()
+
+        # Kein Smoothing: reaktiver WII
+        result['wii'] = result['wii_scaled']
+
+        # Neutral setzen, wenn kein Flow vorhanden ist
+        zero_flow_mask = total_flow <= 0
+        result.loc[zero_flow_mask, 'wii'] = 50
+        result.loc[zero_flow_mask, 'wii_scaled'] = 50
+        result.loc[zero_flow_mask, 'wii_percentile'] = 0.5
+        result.loc[zero_flow_mask, 'wii_normalized'] = 0.5
+        result.loc[zero_flow_mask, 'netflow_ratio'] = 0.0
+        result.loc[zero_flow_mask, 'netflow'] = 0.0
         
         # NaN-Werte behandeln
         result['wii'] = result['wii'].fillna(50)  # Neutral bei fehlenden Daten
@@ -337,6 +343,9 @@ class WAIService:
         result['wii_signal'] = 'neutral'
         result.loc[result['wii'] < 30, 'wii_signal'] = 'selling_pressure'
         result.loc[result['wii'] > 70, 'wii_signal'] = 'accumulation'
+
+        # Sicherstellen, dass Tage ohne Flow neutral bleiben
+        result.loc[zero_flow_mask, 'wii_signal'] = 'neutral'
         
         return result
     
