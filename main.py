@@ -40,14 +40,12 @@ async def root():
     return {
         "name": "WAI Backend API",
         "version": "0.1.0",
-        "description": "Whale Activity Index & Whale Intent Index Calculation Service",
+        "description": "Whale Activity Index (WAI) & Whale Intent Index (WII) - Combined Service",
         "endpoints": {
             "docs": "/docs",
-            "latest": "/api/wai/latest",
-            "history": "/api/wai/history",
-            "statistics": "/api/wai/statistics",
-            "wii_latest": "/api/wii/latest",
-            "wii_history": "/api/wii/history",
+            "latest": "/api/wai/latest (inkl. WII)",
+            "history": "/api/wai/history (inkl. WII)",
+            "statistics": "/api/wai/statistics (inkl. WII)",
             "analysis_lead_lag": "/api/analysis/lead-lag",
             "analysis_regime": "/api/analysis/regime-detection",
             "analysis_volatility": "/api/analysis/conditional-volatility",
@@ -70,10 +68,10 @@ async def health_check():
 @app.get("/api/wai/latest")
 async def get_latest_wai():
     """
-    Gibt den aktuellsten WAI-Wert zurück (v2) und den historischen v1-Vergleich mit BTC-Daten.
+    Gibt den aktuellsten WAI & WII-Wert zurück.
     
     Returns:
-        Dictionary mit dem neuesten WAI-Wert, v1-Vergleich, BTC-Preis und Volatilität
+        Dictionary mit WAI, WII, Exchange-Flows und BTC-Daten
     """
     try:
         result = await wai_service.get_latest_wai()
@@ -89,7 +87,7 @@ async def get_wai_history(
     limit: Optional[int] = Query(None, ge=1, le=1000, description="Max. Anzahl Ergebnisse (1-1000)")
 ):
     """
-    Gibt WAI-Historie für einen Zeitraum zurück (v2) plus v1-Vergleichswerte und BTC-Daten.
+    Gibt WAI & WII Historie für einen Zeitraum zurück.
     
     Query Parameters:
         - start_date: Startdatum im Format YYYY-MM-DD
@@ -97,14 +95,15 @@ async def get_wai_history(
         - limit: Maximale Anzahl der Ergebnisse (neueste zuerst)
     
     Returns:
-        Liste mit WAI-Berechnungen inkl.:
-        - `wai` (v2): Percentile + EMA-Smoothing
-        - `wai_v1`: Linear 50/50 mit Percentile-Skalierung
+        Liste mit Berechnungen inkl.:
+        - `wai` (v2): Whale Activity Index [0-100]
+        - `wii`: Whale Intent Index [0-100]
+        - `wii_signal`: selling_pressure | neutral | accumulation
         - `tx_count`: Whale-Transaktionen
         - `volume`: Whale-Volumen (BTC)
+        - `exchange_inflow/outflow/netflow`: Exchange-Flows (BTC)
         - `btc_close`: BTC-Schlusskurs (USD)
         - `btc_return_1d`: Tägliche BTC-Rendite
-        - `btc_volatility_7d`: 7-Tage BTC-Volatilität
     """
     try:
         # Datumsvalidierung
@@ -258,114 +257,6 @@ async def get_wai_comparison():
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Fehler beim Vergleich: {str(e)}")
-
-
-@app.get("/api/wii/latest")
-async def get_latest_wii():
-    """
-    Gibt den aktuellsten WII-Wert (Whale Intent Index) zurück.
-    
-    Der WII zeigt die Absichten der Whales basierend auf Exchange-Flows:
-    - WII < 30: Starker Verkaufsdruck (Hoher Inflow zu Exchanges)
-    - WII 30-70: Neutral / Ausgeglichen
-    - WII > 70: Starke Akkumulation (Hoher Outflow von Exchanges)
-    
-    Returns:
-        Dictionary mit dem neuesten WII-Wert und Exchange-Flow-Daten
-    """
-    try:
-        result = await wai_service.get_latest_wai()
-        return {
-            'date': result.get('date'),
-            'wii': result.get('wii'),
-            'wii_signal': result.get('wii_signal'),
-            'exchange_inflow': result.get('exchange_inflow'),
-            'exchange_outflow': result.get('exchange_outflow'),
-            'exchange_netflow': result.get('exchange_netflow'),
-            'netflow_ratio': result.get('netflow_ratio'),
-            'interpretation': {
-                'selling_pressure': 'WII < 30: Whales verkaufen (Inflow zu Exchanges)',
-                'neutral': 'WII 30-70: Ausgeglichene Aktivität',
-                'accumulation': 'WII > 70: Whales akkumulieren (Outflow von Exchanges)'
-            }
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Fehler beim Abrufen der WII-Daten: {str(e)}")
-
-
-@app.get("/api/wii/history")
-async def get_wii_history(
-    start_date: Optional[str] = Query(None, description="Startdatum (YYYY-MM-DD)"),
-    end_date: Optional[str] = Query(None, description="Enddatum (YYYY-MM-DD)"),
-    limit: Optional[int] = Query(None, ge=1, le=1000, description="Max. Anzahl Ergebnisse (1-1000)")
-):
-    """
-    Gibt WII-Historie (Whale Intent Index) für einen Zeitraum zurück.
-    
-    Der WII analysiert Whale-Absichten basierend auf Exchange-Flows:
-    - Netflow Ratio: (Outflow - Inflow) / (Outflow + Inflow)
-    - WII-Skalierung: Percentile-basiert auf 180-Tage-Fenster
-    
-    Query Parameters:
-        - start_date: Startdatum im Format YYYY-MM-DD
-        - end_date: Enddatum im Format YYYY-MM-DD
-        - limit: Maximale Anzahl der Ergebnisse (neueste zuerst)
-    
-    Returns:
-        Liste mit WII-Berechnungen inkl.:
-        - `wii`: Whale Intent Index [0-100]
-        - `wii_signal`: selling_pressure | neutral | accumulation
-        - `exchange_inflow`: BTC-Inflow zu Exchanges
-        - `exchange_outflow`: BTC-Outflow von Exchanges
-        - `exchange_netflow`: Netflow (Outflow - Inflow)
-        - `netflow_ratio`: Normalisiertes Netflow [-1, 1]
-    """
-    try:
-        # Datumsvalidierung
-        if start_date:
-            try:
-                datetime.strptime(start_date, '%Y-%m-%d')
-            except ValueError:
-                raise HTTPException(status_code=400, detail="Ungültiges Startdatum. Format: YYYY-MM-DD")
-        
-        if end_date:
-            try:
-                datetime.strptime(end_date, '%Y-%m-%d')
-            except ValueError:
-                raise HTTPException(status_code=400, detail="Ungültiges Enddatum. Format: YYYY-MM-DD")
-        
-        result = await wai_service.get_wai_data(
-            start_date=start_date,
-            end_date=end_date,
-            limit=limit
-        )
-        
-        # Extrahiere nur WII-relevante Daten
-        wii_data = []
-        for item in result:
-            wii_data.append({
-                'date': item.get('date'),
-                'wii': item.get('wii'),
-                'wii_signal': item.get('wii_signal'),
-                'exchange_inflow': item.get('exchange_inflow'),
-                'exchange_outflow': item.get('exchange_outflow'),
-                'exchange_netflow': item.get('exchange_netflow'),
-                'netflow_ratio': item.get('netflow_ratio')
-            })
-        
-        return {
-            "count": len(wii_data),
-            "data": wii_data,
-            "interpretation": {
-                "selling_pressure": "WII < 30: Hoher Inflow zu Exchanges → Verkaufsdruck",
-                "neutral": "WII 30-70: Ausgeglichene Exchange-Aktivität",
-                "accumulation": "WII > 70: Hoher Outflow von Exchanges → Akkumulation"
-            }
-        }
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Fehler beim Abrufen der WII-Historie: {str(e)}")
 
 
 @app.get("/api/analysis/lead-lag")

@@ -54,27 +54,32 @@ Interaktive Docs: http://localhost:8000/docs
 
 ## API-Endpunkte
 
-### WAI (Whale Activity Index)
+### WAI & WII (kombiniert)
 
 ```bash
-# Aktuellster WAI-Wert
+# Aktuellster WAI & WII-Wert
 GET /api/wai/latest
 
-# WAI-Historie
+# WAI & WII Historie (alle Daten inklusive)
 GET /api/wai/history?start_date=2026-01-01&limit=30
 
-# Statistiken
+# Statistiken (WAI & WII)
 GET /api/wai/statistics
 ```
 
-### WII (Whale Intent Index)
-
-```bash
-# Aktuellster WII-Wert
-GET /api/wii/latest
-
-# WII-Historie
-GET /api/wii/history?start_date=2026-01-01&limit=30
+**Response enthält beide Indizes:**
+```json
+{
+  "date": "2026-01-19",
+  "wai": 67,
+  "wii": 45,
+  "wii_signal": "neutral",
+  "tx_count": 10,
+  "volume": 3320.58,
+  "exchange_inflow": 514.84,
+  "exchange_outflow": 262.97,
+  "exchange_netflow": -251.87
+}
 ```
 
 ### Wissenschaftliche Analysen
@@ -209,9 +214,13 @@ Untersucht Flow-abhängige Volatilität:
   "exchange_inflow": 514.84,
   "exchange_outflow": 262.97,
   "exchange_netflow": -251.87,
-  "btc_close": 104500.23
+  "netflow_ratio": -0.3238,
+  "btc_close": 104500.23,
+  "btc_return_1d": 0.0234
 }
 ```
+
+Alle Daten (WAI & WII) in einem Endpoint - einfach und übersichtlich!
 
 ## Technologie-Stack
 
