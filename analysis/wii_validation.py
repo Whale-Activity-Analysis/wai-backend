@@ -11,16 +11,14 @@ Analysiert:
 Run: python analysis/wii_validation.py
 """
 
-import asyncio
 import sys
 import os
 import pandas as pd
 import numpy as np
+import json
 
 # Füge Parent-Verzeichnis zum Path hinzu
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from wai_service import WAIService
 
 try:
     import matplotlib.pyplot as plt
@@ -30,7 +28,21 @@ except ImportError:
     print("⚠️  matplotlib nicht installiert. Nur Text-Output.")
 
 
-async def analyze_wii_validation(service: WAIService):
+def load_wai_history():
+    """Lädt die lokalen WAI-History-Daten"""
+    data_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data', 'wai_history.json')
+    
+    with open(data_path, 'r') as f:
+        json_data = json.load(f)
+    
+    df = pd.DataFrame(json_data['data'])
+    df['date'] = pd.to_datetime(df['date'])
+    df = df.sort_values('date')
+    
+    return df
+
+
+def analyze_wii_validation():
     """
     Validiert: Ist WII Signal wirklich vorhersagbar?
     """
@@ -38,28 +50,15 @@ async def analyze_wii_validation(service: WAIService):
     print("WII VALIDIERUNG - Folgt höherer BTC-Preis auf Accumulation?")
     print("="*80)
     
-    # Daten laden
-    df = await service.fetch_daily_metrics()
-    df = df.sort_values('date')
-    
-    # WAI und WII berechnen
-    df_with_wai = service.calculate_wai(df)
-    df_with_wii = service.calculate_wii(df)
-    
-    # Merge
-    df_analysis = pd.DataFrame()
-    df_analysis['date'] = df['date']
-    df_analysis['wai'] = df_with_wai['wai']
-    df_analysis['wii'] = df_with_wii['wii']
-    df_analysis['wii_signal'] = df_with_wii['wii_signal']
-    df_analysis['btc_close'] = df['btc_close']
-    df_analysis['btc_return_1d'] = df['btc_return_1d']
+    # Daten aus lokaler JSON laden
+    df_analysis = load_wai_history()
     
     # Reset Index für einfacher Zugriff
     df_analysis = df_analysis.reset_index(drop=True)
-    df_analysis = df_analysis.dropna()
+    df_analysis = df_analysis.dropna(subset=['wii', 'btc_close'])
     
-    print(f"\nDatensatz: {len(df_analysis)} Tage\n")
+    print(f"\nDatensatz: {len(df_analysis)} Tage")
+    print(f"Zeitraum: {df_analysis['date'].min().date()} bis {df_analysis['date'].max().date()}\n")
     
     # === ANALYSE: Accumulation ===
     print("="*80)
@@ -78,20 +77,20 @@ async def analyze_wii_validation(service: WAIService):
         # Durchschnittliche Returns nach Accumulation
         future_returns = []
         for idx in accumulation_indices:
-            if idx + 7 < len(df_analysis):
-                # Returns für die nächsten 7 Tage
-                future_prices = df_analysis.iloc[idx+1:idx+8]['btc_close'].values
+            if idx + 3 < len(df_analysis):
+                # Returns für die nächsten 3 Tage
+                future_prices = df_analysis.iloc[idx+1:idx+4]['btc_close'].values
                 if len(future_prices) > 0:
                     avg_future_price = np.mean(future_prices)
                     current_price = df_analysis.iloc[idx]['btc_close']
-                    return_7d = (avg_future_price - current_price) / current_price
-                    future_returns.append(return_7d)
+                    return_3d = (avg_future_price - current_price) / current_price
+                    future_returns.append(return_3d)
         
         if future_returns:
             avg_return = np.mean(future_returns)
             win_rate = sum(1 for r in future_returns if r > 0) / len(future_returns)
             
-            print(f"Ø 7-Tage Return nach Accumulation: {avg_return*100:.2f}%")
+            print(f"Ø 3-Tage Return nach Accumulation: {avg_return*100:.2f}%")
             print(f"Win Rate (Preis höher): {win_rate*100:.1f}%")
             
             if avg_return > 0:
@@ -112,19 +111,19 @@ async def analyze_wii_validation(service: WAIService):
         # Durchschnittliche Returns nach Selling Pressure
         future_returns_sell = []
         for idx in selling_indices:
-            if idx + 7 < len(df_analysis):
-                future_prices = df_analysis.iloc[idx+1:idx+8]['btc_close'].values
+            if idx + 3 < len(df_analysis):
+                future_prices = df_analysis.iloc[idx+1:idx+4]['btc_close'].values
                 if len(future_prices) > 0:
                     avg_future_price = np.mean(future_prices)
                     current_price = df_analysis.iloc[idx]['btc_close']
-                    return_7d = (avg_future_price - current_price) / current_price
-                    future_returns_sell.append(return_7d)
+                    return_3d = (avg_future_price - current_price) / current_price
+                    future_returns_sell.append(return_3d)
         
         if future_returns_sell:
             avg_return = np.mean(future_returns_sell)
             win_rate = sum(1 for r in future_returns_sell if r < 0) / len(future_returns_sell)
             
-            print(f"Ø 7-Tage Return nach Selling Pressure: {avg_return*100:.2f}%")
+            print(f"Ø 3-Tage Return nach Selling Pressure: {avg_return*100:.2f}%")
             print(f"Decline Rate (Preis fällt): {win_rate*100:.1f}%")
             
             if avg_return < 0:
@@ -144,17 +143,17 @@ async def analyze_wii_validation(service: WAIService):
         
         future_returns_neutral = []
         for idx in neutral_indices:
-            if idx + 7 < len(df_analysis):
-                future_prices = df_analysis.iloc[idx+1:idx+8]['btc_close'].values
+            if idx + 3 < len(df_analysis):
+                future_prices = df_analysis.iloc[idx+1:idx+4]['btc_close'].values
                 if len(future_prices) > 0:
                     avg_future_price = np.mean(future_prices)
                     current_price = df_analysis.iloc[idx]['btc_close']
-                    return_7d = (avg_future_price - current_price) / current_price
-                    future_returns_neutral.append(return_7d)
+                    return_3d = (avg_future_price - current_price) / current_price
+                    future_returns_neutral.append(return_3d)
         
         if future_returns_neutral:
             avg_return = np.mean(future_returns_neutral)
-            print(f"Ø 7-Tage Return (Neutral): {avg_return*100:.2f}%")
+            print(f"Ø 3-Tage Return (Neutral): {avg_return*100:.2f}%")
     
     # === GRAFISCHE DARSTELLUNG ===
     if MATPLOTLIB_AVAILABLE:
@@ -190,19 +189,19 @@ async def analyze_wii_validation(service: WAIService):
         if future_returns:
             stats_text += f"Accumulation (WII > 70):\n"
             stats_text += f"  • Anzahl Tage: {len(accumulation_indices)}\n"
-            stats_text += f"  • Ø 7-Tage Return: {np.mean(future_returns)*100:.2f}%\n"
+            stats_text += f"  • Ø 3-Tage Return: {np.mean(future_returns)*100:.2f}%\n"
             stats_text += f"  • Win Rate (Preis höher): {sum(1 for r in future_returns if r > 0)/len(future_returns)*100:.1f}%\n\n"
         
         if future_returns_sell:
             stats_text += f"Selling Pressure (WII < 30):\n"
             stats_text += f"  • Anzahl Tage: {len(selling_indices)}\n"
-            stats_text += f"  • Ø 7-Tage Return: {np.mean(future_returns_sell)*100:.2f}%\n"
+            stats_text += f"  • Ø 3-Tage Return: {np.mean(future_returns_sell)*100:.2f}%\n"
             stats_text += f"  • Decline Rate (Preis fällt): {sum(1 for r in future_returns_sell if r < 0)/len(future_returns_sell)*100:.1f}%\n\n"
         
         if future_returns_neutral:
             stats_text += f"Neutral (30-70):\n"
             stats_text += f"  • Anzahl Tage: {len(neutral_indices)}\n"
-            stats_text += f"  • Ø 7-Tage Return: {np.mean(future_returns_neutral)*100:.2f}%\n"
+            stats_text += f"  • Ø 3-Tage Return: {np.mean(future_returns_neutral)*100:.2f}%\n"
         
         ax2.text(0.05, 0.5, stats_text, fontsize=11, verticalalignment='center',
                 fontfamily='monospace', bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.8, pad=1))
@@ -212,19 +211,17 @@ async def analyze_wii_validation(service: WAIService):
         print(f"\n✓ Grafik gespeichert: analysis/wii_validation.png")
 
 
-async def main():
+def main():
     """Hauptfunktion"""
     print("\n" + "="*80)
     print("WII VALIDIERUNG")
     print("="*80)
     print("\nFrage: Folgt höherer BTC-Preis auf Whale-Accumulation (WII > 70)?")
-    print("Methode: Vergleiche 7-Tage-Returns nach WII-Signalen")
+    print("Methode: Vergleiche 3-Tage-Returns nach WII-Signalen")
     print("\n" + "="*80)
     
-    service = WAIService()
-    
     try:
-        await analyze_wii_validation(service)
+        analyze_wii_validation()
         
         print("\n" + "="*80)
         print("ANALYSE ABGESCHLOSSEN ✓")
@@ -237,4 +234,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
