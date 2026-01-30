@@ -265,22 +265,10 @@ async def get_validation_stats():
     Die Validierungslogik lädt sich die Daten und analysiert sie mit der
     Methode aus analysis/wii_validation.py.
     
-    Query Parameters:
-        - lookback (default "3,7,14"): Komma-getrennte Liste von Tagen
-    
     Returns:
         Dictionary mit Marketing Message und Statistiken
-    
-    Example:
-        GET /api/wai/validation-stats?lookback=3,7,14
     """
-    try:
-        # Parse lookback_days
-        try:
-            lookback_days = [int(x.strip()) for x in lookback.split(',')]
-        except ValueError:
-            raise HTTPException(status_code=400, detail="lookback muss Komma-getrennte Zahlen sein, z.B. '3,7,14'")
-        
+    try:        
         # Importiere Validierungsfunktionen aus wii_validation.py
         import sys
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'analysis'))
@@ -295,7 +283,7 @@ async def get_validation_stats():
             raise HTTPException(status_code=400, detail="Nicht genug Daten für Validierung")
         
         # Berechne Stats
-        stats = calculate_wii_returns(df, lookback_days)
+        stats = calculate_wii_returns(df, [3, 7, 14])
         
         # Generiere Marketing Message
         marketing_msg = generate_marketing_message(stats)
