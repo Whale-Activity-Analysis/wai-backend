@@ -3,6 +3,7 @@ WAI Service - Berechnet den Whale Activity Index
 """
 import httpx
 import pandas as pd
+import numpy as np
 from typing import List, Dict, Optional
 from datetime import datetime
 from config import config
@@ -969,3 +970,22 @@ class WAIService:
                 'inflow_bearish_confirmed': flow_volatility['high_inflow']['avg_return'] < 0
             }
         }
+    
+    async def get_wii_validation_stats(self, lookback_days: list = None) -> Dict:
+        """
+        Gibt aktuelle WII-Daten zurück.
+        Validierungen werden vom wii_validation.py Script durchgeführt.
+        """
+        df = await self.fetch_daily_metrics()
+        df = df.reset_index(drop=True)
+        df = self.calculate_wii(df)
+        
+        if len(df) > 0:
+            latest = df.iloc[-1]
+            return {
+                'latest_wii': latest.get('wii'),
+                'latest_date': latest.get('date').strftime('%Y-%m-%d') if latest.get('date') else None,
+                'data_point': 'Detaillierte Validierungsstatistiken: python analysis/wii_validation.py'
+            }
+        
+        return {'error': 'Nicht genug Daten'}
