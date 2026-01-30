@@ -257,7 +257,7 @@ async def get_wai_comparison():
         raise HTTPException(status_code=500, detail=f"Fehler beim Vergleich: {str(e)}")
 
 
-@app.get("/api/wai/validation-stats")
+@app.get("/api/wai/validation")
 async def get_validation_stats(
     lookback: Optional[str] = Query("3,7,14", description="Komma-getrennte Tage für Analyse, z.B. '3,7,14'")
 ):
