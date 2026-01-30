@@ -257,32 +257,13 @@ async def get_wai_comparison():
         raise HTTPException(status_code=500, detail=f"Fehler beim Vergleich: {str(e)}")
 
 
-@app.get("/api/wai/validation-stats")
-async def get_validation_stats(
-    lookback: Optional[str] = Query("3,7,14", description="Komma-getrennte Tage für Analyse, z.B. '3,7,14'")
-):
+@app.get("/api/wai/validation")
+async def get_validation_stats():
     """
     Gibt WII Validierungsstatistiken mit Marketing Message zurück.
-    
-    Die Validierungslogik lädt sich die Daten und analysiert sie mit der
-    Methode aus analysis/wii_validation.py.
-    
-    Query Parameters:
-        - lookback (default "3,7,14"): Komma-getrennte Liste von Tagen
-    
-    Returns:
-        Dictionary mit Marketing Message und Statistiken
-    
-    Example:
-        GET /api/wai/validation-stats?lookback=3,7,14
+    Analysiert 3, 7 und 14 Tage Lookback.
     """
     try:
-        # Parse lookback_days
-        try:
-            lookback_days = [int(x.strip()) for x in lookback.split(',')]
-        except ValueError:
-            raise HTTPException(status_code=400, detail="lookback muss Komma-getrennte Zahlen sein, z.B. '3,7,14'")
-        
         # Importiere Validierungsfunktionen aus wii_validation.py
         import sys
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'analysis'))
@@ -296,20 +277,18 @@ async def get_validation_stats(
         if len(df) < 2:
             raise HTTPException(status_code=400, detail="Nicht genug Daten für Validierung")
         
-        # Berechne Stats
-        stats = calculate_wii_returns(df, lookback_days)
+        # Berechne Stats mit festen 3, 7, 14 Tagen
+        stats = calculate_wii_returns(df, [3, 7, 14])
         
         # Generiere Marketing Message
         marketing_msg = generate_marketing_message(stats)
-        
-        # Füge Message zu Stats hinzu
         stats['marketing_message'] = marketing_msg
         
         return stats
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Fehler bei der Validierungsanalyse: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Fehler: {str(e)}")
 
 
 # Hauptfunktion zum Starten des Servers
