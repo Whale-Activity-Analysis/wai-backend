@@ -258,9 +258,7 @@ async def get_wai_comparison():
 
 
 @app.get("/api/wai/validation")
-async def get_validation_stats(
-    lookback: Optional[str] = Query("3,7,14", description="Komma-getrennte Tage für Analyse, z.B. '3,7,14'")
-):
+async def get_validation_stats():
     """
     Gibt WII Validierungsstatistiken mit Marketing Message zurück.
     
