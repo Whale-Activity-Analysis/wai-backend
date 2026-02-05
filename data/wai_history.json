@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "collected_at": "2026-02-04T23:54:00.183720Z",
+    "collected_at": "2026-02-05T02:07:21.473770Z",
     "record_count": 44
   },
   "data": [
@@ -15,7 +15,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 75638.96,
+      "btc_return_1d": -0.0397,
+      "btc_volatility_7d": 0.0605
     },
     {
       "date": "2026-02-03",
@@ -28,7 +31,10 @@
       "exchange_inflow": 500.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": -500.0,
-      "netflow_ratio": -1.0
+      "netflow_ratio": -1.0,
+      "btc_close": 78767.66,
+      "btc_return_1d": 0.0238,
+      "btc_volatility_7d": 0.0608
     },
     {
       "date": "2026-02-02",
@@ -41,7 +47,10 @@
       "exchange_inflow": 3698.76,
       "exchange_outflow": 0.0,
       "exchange_netflow": -3698.76,
-      "netflow_ratio": -1.0
+      "netflow_ratio": -1.0,
+      "btc_close": 76937.06,
+      "btc_return_1d": -0.0227,
+      "btc_volatility_7d": 0.059
     },
     {
       "date": "2026-02-01",
@@ -54,7 +63,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 78725.86,
+      "btc_return_1d": -0.0644,
+      "btc_volatility_7d": 0.0436
     },
     {
       "date": "2026-01-31",
@@ -67,7 +79,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 207.04,
       "exchange_netflow": 207.04,
-      "netflow_ratio": 1.0
+      "netflow_ratio": 1.0,
+      "btc_close": 84141.78,
+      "btc_return_1d": -0.0051,
+      "btc_volatility_7d": 0.0254
     },
     {
       "date": "2026-01-30",
@@ -80,7 +95,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 84570.41,
+      "btc_return_1d": -0.0515,
+      "btc_volatility_7d": 0.0208
     },
     {
       "date": "2026-01-29",
@@ -93,7 +111,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 89162.1,
+      "btc_return_1d": -0.0005,
+      "btc_volatility_7d": 0.0117
     },
     {
       "date": "2026-01-28",
@@ -106,7 +127,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 89204.22,
+      "btc_return_1d": 0.0102,
+      "btc_volatility_7d": 0.0119
     },
     {
       "date": "2026-01-27",
@@ -119,7 +143,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 88307.86,
+      "btc_return_1d": 0.0203,
+      "btc_volatility_7d": 0.0119
     },
     {
       "date": "2026-01-26",
@@ -132,7 +159,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 86548.32,
+      "btc_return_1d": -0.0294,
+      "btc_volatility_7d": 0.02
     },
     {
       "date": "2026-01-25",
@@ -145,7 +175,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 89170.87,
+      "btc_return_1d": -0.0027,
+      "btc_volatility_7d": 0.0225
     },
     {
       "date": "2026-01-23",
@@ -158,7 +191,10 @@
       "exchange_inflow": 351.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": -351.0,
-      "netflow_ratio": -1.0
+      "netflow_ratio": -1.0,
+      "btc_close": 89443.4,
+      "btc_return_1d": 0.001,
+      "btc_volatility_7d": 0.0321
     },
     {
       "date": "2026-01-22",
@@ -171,7 +207,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 89354.34,
+      "btc_return_1d": 0.0118,
+      "btc_volatility_7d": 0.0321
     },
     {
       "date": "2026-01-21",
@@ -184,7 +223,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 88312.84,
+      "btc_return_1d": -0.0459,
+      "btc_volatility_7d": 0.0306
     },
     {
       "date": "2026-01-20",
@@ -197,7 +239,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 92558.46,
+      "btc_return_1d": -0.0127,
+      "btc_volatility_7d": 0.015
     },
     {
       "date": "2026-01-19",
@@ -210,7 +255,10 @@
       "exchange_inflow": 514.84,
       "exchange_outflow": 262.97,
       "exchange_netflow": -251.87,
-      "netflow_ratio": -0.3238
+      "netflow_ratio": -0.3238,
+      "btc_close": 93752.71,
+      "btc_return_1d": -0.0142,
+      "btc_volatility_7d": 0.0197
     },
     {
       "date": "2026-01-18",
@@ -223,7 +271,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 95099.53,
+      "btc_return_1d": -0.0044,
+      "btc_volatility_7d": 0.0253
     },
     {
       "date": "2026-01-17",
@@ -236,7 +287,10 @@
       "exchange_inflow": 213.75,
       "exchange_outflow": 0.0,
       "exchange_netflow": -213.75,
-      "netflow_ratio": -1.0
+      "netflow_ratio": -1.0,
+      "btc_close": 95516.08,
+      "btc_return_1d": -0.0007,
+      "btc_volatility_7d": 0.0295
     },
     {
       "date": "2026-01-16",
@@ -249,7 +303,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 95584.83,
+      "btc_return_1d": -0.0147,
+      "btc_volatility_7d": 0.0307
     },
     {
       "date": "2026-01-15",
@@ -262,7 +319,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 97007.78,
+      "btc_return_1d": 0.0183,
+      "btc_volatility_7d": 0.029
     },
     {
       "date": "2026-01-14",
@@ -275,7 +335,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 95260.44,
+      "btc_return_1d": 0.0453,
+      "btc_volatility_7d": 0.0185
     },
     {
       "date": "2026-01-13",
@@ -288,7 +351,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 91134.97,
+      "btc_return_1d": 0.0035,
+      "btc_volatility_7d": 0.0121
     },
     {
       "date": "2026-01-12",
@@ -301,7 +367,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 90819.37,
+      "btc_return_1d": 0.0042,
+      "btc_volatility_7d": 0.0162
     },
     {
       "date": "2026-01-11",
@@ -314,7 +383,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 90442.02,
+      "btc_return_1d": -0.0007,
+      "btc_volatility_7d": 0.0158
     },
     {
       "date": "2026-01-10",
@@ -327,7 +399,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 90504.9,
+      "btc_return_1d": -0.0053,
+      "btc_volatility_7d": 0.0156
     },
     {
       "date": "2026-01-09",
@@ -340,7 +415,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 90983.52,
+      "btc_return_1d": -0.003,
+      "btc_volatility_7d": 0.0167
     },
     {
       "date": "2026-01-08",
@@ -353,7 +431,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 91257.16,
+      "btc_return_1d": -0.0257,
+      "btc_volatility_7d": 0.0207
     },
     {
       "date": "2026-01-07",
@@ -366,7 +447,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 93666.86,
+      "btc_return_1d": -0.0028,
+      "btc_volatility_7d": 0.0263
     },
     {
       "date": "2026-01-06",
@@ -379,7 +463,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 93926.8,
+      "btc_return_1d": 0.0279,
+      "btc_volatility_7d": 0.0239
     },
     {
       "date": "2026-01-05",
@@ -392,7 +479,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 91373.22,
+      "btc_return_1d": 0.0086,
+      "btc_volatility_7d": 0.0177
     },
     {
       "date": "2026-01-04",
@@ -405,7 +495,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 90593.85,
+      "btc_return_1d": 0.0074,
+      "btc_volatility_7d": 0.0143
     },
     {
       "date": "2026-01-03",
@@ -418,7 +511,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 89926.28,
+      "btc_return_1d": 0.0135,
+      "btc_volatility_7d": 0.0105
     },
     {
       "date": "2026-01-02",
@@ -431,7 +527,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 88727.67,
+      "btc_return_1d": 0.0138,
+      "btc_volatility_7d": 0.0065
     },
     {
       "date": "2026-01-01",
@@ -444,7 +543,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 87520.18,
+      "btc_return_1d": -0.0101,
+      "btc_volatility_7d": 0.0051
     },
     {
       "date": "2025-12-31",
@@ -457,7 +559,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 88414.63,
+      "btc_return_1d": 0.0144,
+      "btc_volatility_7d": 0.005
     },
     {
       "date": "2025-12-30",
@@ -470,7 +575,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 87156.56,
+      "btc_return_1d": -0.0076,
+      "btc_volatility_7d": 0.0031
     },
     {
       "date": "2025-12-29",
@@ -483,7 +591,10 @@
       "exchange_inflow": 242.71,
       "exchange_outflow": 0.0,
       "exchange_netflow": -242.71,
-      "netflow_ratio": -1.0
+      "netflow_ratio": -1.0,
+      "btc_close": 87822.91,
+      "btc_return_1d": 0.0002,
+      "btc_volatility_7d": 0.0049
     },
     {
       "date": "2025-12-28",
@@ -496,7 +607,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 87807.0,
+      "btc_return_1d": 0.0057,
+      "btc_volatility_7d": 0.0063
     },
     {
       "date": "2025-12-27",
@@ -509,7 +623,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 87305.96,
+      "btc_return_1d": 0.0009,
+      "btc_volatility_7d": 0.0067
     },
     {
       "date": "2025-12-26",
@@ -522,7 +639,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 87229.78,
+      "btc_return_1d": -0.0047,
+      "btc_volatility_7d": 0.0062
     },
     {
       "date": "2025-12-24",
@@ -535,7 +655,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 481.0,
       "exchange_netflow": 481.0,
-      "netflow_ratio": 1.0
+      "netflow_ratio": 1.0,
+      "btc_close": 87406.44,
+      "btc_return_1d": -0.0123,
+      "btc_volatility_7d": 0.0144
     },
     {
       "date": "2025-12-23",
@@ -548,7 +671,10 @@
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
-      "netflow_ratio": 0.0
+      "netflow_ratio": 0.0,
+      "btc_close": 88491.12,
+      "btc_return_1d": -0.001,
+      "btc_volatility_7d": 0.0144
     },
     {
       "date": "2025-12-22",
@@ -561,7 +687,10 @@
       "exchange_inflow": 221.32,
       "exchange_outflow": 560.65,
       "exchange_netflow": 339.33,
-      "netflow_ratio": 0.4339
+      "netflow_ratio": 0.4339,
+      "btc_close": 88577.42,
+      "btc_return_1d": 0.0026,
+      "btc_volatility_7d": 0.0143
     },
     {
       "date": "2025-12-21",
@@ -574,7 +703,10 @@
       "exchange_inflow": 1753.42,
       "exchange_outflow": 869.46,
       "exchange_netflow": -883.96,
-      "netflow_ratio": -0.337
+      "netflow_ratio": -0.337,
+      "btc_close": 88347.94,
+      "btc_return_1d": 0.0028,
+      "btc_volatility_7d": 0.0137
     }
   ]
 }
