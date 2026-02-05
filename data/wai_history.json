@@ -1,17 +1,17 @@
 {
   "metadata": {
-    "collected_at": "2026-02-05T15:10:14.255747Z",
+    "collected_at": "2026-02-05T16:07:24.724098Z",
     "record_count": 45
   },
   "data": [
     {
       "date": "2026-02-05",
-      "wai": 53,
-      "wai_v1": 20,
+      "wai": 55,
+      "wai_v1": 33,
       "wii": 50,
       "wii_signal": "neutral",
-      "tx_count": 3,
-      "volume": 2731.68,
+      "tx_count": 5,
+      "volume": 3609.48,
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
