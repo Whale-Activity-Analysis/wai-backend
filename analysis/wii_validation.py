@@ -187,6 +187,7 @@ def analyze_wii_validation():
     """
     Validiert: Ist WII Signal wirklich vorhersagbar?
     Nutzt interne calculate_wii_returns() Methode für Validierungslogik.
+    Speichert Stats als JSON für API-Caching.
     """
     # ===== KONFIGURATION =====
     LOOKBACK_DAYS = [3, 7, 14]
@@ -249,6 +250,15 @@ def analyze_wii_validation():
     print("="*80)
     marketing_msg = generate_marketing_message(stats)
     print(f"{marketing_msg}\n")
+    
+    # === STATS ALS JSON SPEICHERN (für API-Caching) ===
+    stats_with_msg = stats.copy()
+    stats_with_msg['marketing_message'] = marketing_msg
+    
+    stats_file = os.path.join(os.path.dirname(__file__), '..', 'data', 'wii_validation_stats.json')
+    with open(stats_file, 'w') as f:
+        json.dump(stats_with_msg, f, indent=2, default=str)
+    print(f"✓ Stats gespeichert: data/wii_validation_stats.json\n")
     
     # === GRAFISCHE DARSTELLUNG ===
     if MATPLOTLIB_AVAILABLE:

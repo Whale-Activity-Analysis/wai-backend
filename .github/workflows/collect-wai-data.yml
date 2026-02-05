@@ -25,24 +25,27 @@ jobs:
       
       - name: Install dependencies
         run: |
-          pip install httpx
+          pip install httpx pandas numpy
       
       - name: Collect WAI data
         env:
-          # Replace with your actual API URL when deployed
           WAI_API_URL: ${{ secrets.WAI_API_URL || 'http://80.158.78.0:8000' }}
         run: |
           python collect_wai_data.py
+      
+      - name: Run WII Validation
+        run: |
+          python analysis/wii_validation.py
       
       - name: Commit & Push Data
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
-          git add data/*.json data/*.csv
+          git add data/*.json data/*.csv analysis/*.png
           
           if ! git diff --quiet || ! git diff --staged --quiet; then            
-            git commit -m "📊 Update WAI data - $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git commit -m "📊 Update WAI data & validation - $(date -u +'%Y-%m-%d %H:%M UTC')"
             git push
             echo "✅ Changes committed and pushed"
           else

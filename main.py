@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 from typing import Optional
 import uvicorn
 import os
+import json
 from datetime import datetime
 
 from wai_service import WAIService
@@ -260,31 +261,33 @@ async def get_wai_comparison():
 @app.get("/api/wai/validation")
 async def get_validation_stats():
     """
-    Gibt WII Validierungsstatistiken mit Marketing Message zurück.
-    Analysiert 3, 7 und 14 Tage Lookback.
+    Gibt zwischengespeicherte WII Validierungsstatistiken mit Marketing Message zurück.
+    Stats werden regelmäßig via wii_validation.py aktualisiert (Teil des Collect Jobs).
     """
     try:
-        # Importiere Validierungsfunktionen aus wii_validation.py
-        import sys
-        sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'analysis'))
-        from wii_validation import calculate_wii_returns, generate_marketing_message, load_wai_history
+        # Versuche gecachte Stats zu laden
+        stats_file = os.path.join(os.path.dirname(__file__), 'data', 'wii_validation_stats.json')
         
-        # Lade Daten lokal
-        df = load_wai_history()
-        df = df.reset_index(drop=True)
-        df = df.dropna(subset=['wii', 'btc_close'])
-        
-        if len(df) < 2:
-            raise HTTPException(status_code=400, detail="Nicht genug Daten für Validierung")
-        
-        # Berechne Stats mit festen 3, 7, 14 Tagen
-        stats = calculate_wii_returns(df, [3, 7, 14])
-        
-        # Generiere Marketing Message
-        marketing_msg = generate_marketing_message(stats)
-        stats['marketing_message'] = marketing_msg
-        
-        return stats
+        if os.path.exists(stats_file):
+            with open(stats_file, 'r') as f:
+                stats = json.load(f)
+            return stats
+        else:
+            # Fallback: live berechnen wenn noch keine Cache-Datei existiert
+            import sys
+            sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'analysis'))
+            from wii_validation import calculate_wii_returns, generate_marketing_message, load_wai_history
+            
+            df = load_wai_history()
+            df = df.reset_index(drop=True)
+            df = df.dropna(subset=['wii', 'btc_close'])
+            
+            if len(df) < 2:
+                raise HTTPException(status_code=400, detail="Nicht genug Daten")
+            
+            stats = calculate_wii_returns(df, [3, 7, 14])
+            stats['marketing_message'] = generate_marketing_message(stats)
+            return stats
     except HTTPException:
         raise
     except Exception as e:
