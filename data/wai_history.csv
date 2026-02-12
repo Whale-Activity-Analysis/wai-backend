@@ -1,5 +1,5 @@
 btc_close,btc_return_1d,btc_volatility_7d,date,exchange_inflow,exchange_netflow,exchange_outflow,netflow_ratio,tx_count,volume,wai,wai_v1,wii,wii_signal
-66937.58,-0.0268,0.0404,2026-02-12,0.0,0.0,0.0,0.0,5,2245.21,37,31,50,neutral
+66937.58,-0.0268,0.0404,2026-02-12,0.0,-219.48,219.48,1.0,9,3518.03,41,50,100,accumulation
 68779.91,-0.0188,0.0458,2026-02-11,299.1,299.1,0.0,-1.0,3,1368.42,38,20,14,selling_pressure
 70096.41,-0.0063,0.0561,2026-02-10,3640.0,3640.0,0.0,-1.0,9,6700.15,45,68,12,selling_pressure
 70542.37,0.018,0.0709,2026-02-09,0.0,0.0,0.0,0.0,1,228.9,35,2,50,neutral

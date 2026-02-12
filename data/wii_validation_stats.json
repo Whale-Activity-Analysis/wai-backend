@@ -5,7 +5,7 @@
     "end": "2025-12-21"
   },
   "accumulation": {
-    "count": 4,
+    "count": 5,
     "signal": "WII > 70 (Whales Kaufen)",
     "returns": {
       "3d": {
@@ -47,7 +47,7 @@
     }
   },
   "neutral": {
-    "count": 40,
+    "count": 39,
     "signal": "WII 30-70 (Neutral)",
     "returns": {
       "3d": {
