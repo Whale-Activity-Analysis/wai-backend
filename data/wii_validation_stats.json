@@ -1,7 +1,7 @@
 {
-  "data_points": 52,
+  "data_points": 53,
   "date_range": {
-    "start": "2026-02-12",
+    "start": "2026-02-13",
     "end": "2025-12-21"
   },
   "accumulation": {
@@ -9,19 +9,19 @@
     "signal": "WII > 70 (Whales Kaufen)",
     "returns": {
       "3d": {
-        "avg_return_pct": -2.07,
-        "win_rate_pct": 25.0,
-        "sample_size": 4
+        "avg_return_pct": -1.88,
+        "win_rate_pct": 20.0,
+        "sample_size": 5
       },
       "7d": {
-        "avg_return_pct": -3.44,
-        "win_rate_pct": 25.0,
-        "sample_size": 4
+        "avg_return_pct": -2.98,
+        "win_rate_pct": 20.0,
+        "sample_size": 5
       },
       "14d": {
-        "avg_return_pct": -2.95,
-        "win_rate_pct": 75.0,
-        "sample_size": 4
+        "avg_return_pct": -2.69,
+        "win_rate_pct": 60.0,
+        "sample_size": 5
       }
     }
   },
@@ -30,24 +30,24 @@
     "signal": "WII < 30 (Whales Verkaufen)",
     "returns": {
       "3d": {
-        "avg_return_pct": -3.15,
+        "avg_return_pct": -3.31,
         "decline_rate_pct": 100.0,
         "sample_size": 8
       },
       "7d": {
-        "avg_return_pct": -4.27,
+        "avg_return_pct": -4.44,
         "decline_rate_pct": 87.5,
         "sample_size": 8
       },
       "14d": {
-        "avg_return_pct": -6.01,
+        "avg_return_pct": -6.3,
         "decline_rate_pct": 87.5,
         "sample_size": 8
       }
     }
   },
   "neutral": {
-    "count": 39,
+    "count": 40,
     "signal": "WII 30-70 (Neutral)",
     "returns": {
       "3d": {
@@ -55,14 +55,14 @@
         "sample_size": 39
       },
       "7d": {
-        "avg_return_pct": -1.21,
+        "avg_return_pct": -1.29,
         "sample_size": 39
       },
       "14d": {
-        "avg_return_pct": -2.75,
+        "avg_return_pct": -2.88,
         "sample_size": 39
       }
     }
   },
-  "marketing_message": "WII Accumulation: 42% Hitrate | WII Selling: 92% Accuracy | Overall: 67%"
+  "marketing_message": "WII Selling: 92% Accuracy | Overall: 62%"
 }
