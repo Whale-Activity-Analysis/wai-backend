@@ -96,6 +96,126 @@ Das Skript analysiert:
 
 Ergebnisse optional als JSON speicherbar.
 
+### WAI-Extras (Erweiterte Signale)
+
+```bash
+# Whale Momentum - Beschleunigung der Aktivität
+GET /api/wai/momentum
+
+# Confidence Score - Signalqualität
+GET /api/wai/confidence
+
+# Historical Backtest - WII-Signal Performance
+GET /api/wai/backtest?signal=wii_accumulation&horizon=7
+```
+
+#### Whale Momentum
+
+Misst die **Beschleunigung** der Whale-Aktivität:
+
+```
+Momentum = WAI_heute - WAI_7d_durchschnitt
+```
+
+**Response:**
+```json
+{
+  "date": "2026-02-18",
+  "whale_momentum": 12.5,
+  "momentum_signal": "acceleration",
+  "wai": 67.0,
+  "wai_7d_avg": 54.5,
+  "interpretation": "Whale-Aktivität nimmt zu - Momentum positiv"
+}
+```
+
+**Signale:**
+- `strong_acceleration` (>20): Starke Beschleunigung
+- `acceleration` (10-20): Beschleunigung
+- `neutral` (-10 bis +10): Stabil
+- `deceleration` (-20 bis -10): Verlangsamung
+- `strong_deceleration` (<-20): Starke Verlangsamung
+
+#### Confidence Score
+
+Bewertet die **Verlässlichkeit** des aktuellen Signals:
+
+```
+Confidence = (TX_Count × 0.4 + Exchange_Activity × 0.3 + Stability × 0.3) × 100
+```
+
+**Response:**
+```json
+{
+  "date": "2026-02-18",
+  "confidence_score": 72.5,
+  "confidence_level": "high",
+  "components": {
+    "tx_count_score": 0.75,
+    "exchange_activity_score": 0.68,
+    "stability_score": 0.74
+  },
+  "interpretation": "Hohe Confidence - Signal ist verlässlich"
+}
+```
+
+**Levels:**
+- `very_high` (>80): Sehr verlässlich
+- `high` (60-80): Verlässlich
+- `moderate` (40-60): Mit Vorsicht
+- `low` (<40): Schwaches Signal
+
+#### Historical Backtest
+
+Testet **WII-Signale** auf historische Performance:
+
+**Verfügbare Signale:**
+- `wii_accumulation`: WII > 70 (Bullish)
+- `wii_strong_accumulation`: WII > 85 (Sehr Bullish)
+- `wii_selling`: WII < 30 (Bearish)
+- `wii_strong_selling`: WII < 15 (Sehr Bearish)
+
+**Parameter:**
+- `signal`: WII-Signal Typ (siehe oben)
+- `horizon`: Forward-Return Horizont (1-30 Tage, default: 3)
+
+**Response:**
+```json
+{
+  "signal_type": "wii_accumulation",
+  "signal_direction": "bullish (Long)",
+  "horizon_days": 7,
+  "total_signals": 45,
+  "performance": {
+    "win_rate": 62.22,
+    "avg_return": 2.34,
+    "median_return": 1.98,
+    "max_drawdown": -8.45,
+    "sharpe_ratio": 1.42
+  },
+  "prediction_stats": {
+    "correct_predictions": 28,
+    "incorrect_predictions": 17,
+    "avg_return_when_correct": 4.12,
+    "avg_return_when_incorrect": -2.45,
+    "profit_factor": 2.35,
+    "win_condition": "Preis stieg (positiv)"
+  },
+  "interpretation": {
+    "signal_direction": "bullish (Long)",
+    "win_rate_assessment": "Sehr gut - Signal zeigt starke Vorhersagekraft",
+    "return_assessment": "Gut - Positive durchschnittliche Returns",
+    "sharpe_assessment": "Gut - Solides Risk/Reward-Verhältnis",
+    "overall_assessment": "✅ Bullish Signal zeigt starke historische Performance",
+    "recommendation": "Signal zeigt robuste Vorhersagekraft"
+  }
+}
+```
+
+**Wichtig:** 
+- Bei **bullish** Signalen: Positive Returns = Win
+- Bei **bearish** Signalen: **Negative Returns = Win** (Short Position simuliert)
+
 ## Dokumentation
 
 ### Methodologie
