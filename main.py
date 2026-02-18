@@ -45,22 +45,15 @@ async def root():
         "description": "Whale Activity Index (WAI) & Whale Intent Index (WII) - Combined Service",
         "endpoints": {
             "docs": "/docs",
-            "latest": "/api/wai/latest (inkl. WII)",
-            "history": "/api/wai/history (inkl. WII)",
-            "statistics": "/api/wai/statistics (inkl. WII)",
-            "health": "/health"
+            "latest": "/api/wai/latest (inkl. WII, Momentum, Confidence)",
+            "history": "/api/wai/history (inkl. WII, Momentum, Confidence)",
+            "statistics": "/api/wai/statistics",
+            "momentum": "/api/wai/momentum (Whale Momentum Indikator)",
+            "confidence": "/api/wai/confidence (Signal Confidence Score)",
+            "backtest": "/api/wai/backtest (Historical Signal Backtest)",
+            "validation": "/api/wai/validation (WII-Validierungsstats)"
         },
         "note": "Für wissenschaftliche Analysen siehe /analysis Ordner (Python-Skripte)"
-    }
-
-
-@app.get("/health")
-async def health_check():
-    """Health Check Endpoint"""
-    return {
-        "status": "healthy",
-        "timestamp": datetime.now().isoformat(),
-        "service": "wai-backend"
     }
 
 
@@ -174,88 +167,179 @@ async def get_statistics(
         raise HTTPException(status_code=500, detail=f"Fehler beim Berechnen der Statistiken: {str(e)}")
 
 
-@app.get("/api/wai/formula")
-async def get_formula_info():
+@app.get("/api/wai/momentum")
+async def get_whale_momentum(
+    limit: Optional[int] = Query(10, ge=1, le=100, description="Max. Anzahl Ergebnisse (1-100)")
+):
     """
-    Gibt Informationen über die WAI-Berechnungsformel zurück
+    Gibt Whale Momentum Daten zurück - zeigt Beschleunigung/Verlangsamung der Whale-Aktivität.
+    
+    Whale Momentum = WAI_today - WAI_7d_avg
+    
+    Query Parameters:
+        - limit: Maximale Anzahl der Ergebnisse (neueste zuerst, default: 10)
     
     Returns:
-        Dictionary mit Formelbeschreibung und Parametern
-    """
-    baseline_type = config.USE_ROBUST_BASELINE.upper()
+        - `whale_momentum`: Momentum-Wert (positiv = Beschleunigung, negativ = Verlangsamung)
+        - `momentum_signal`: Klassifikation (strong_acceleration | acceleration | neutral | deceleration | strong_deceleration)
+        - `wai`: Aktueller WAI-Wert
+        - `wai_7d_avg`: 7-Tage-Durchschnitt des WAI
     
-    baseline_formulas = {
-        "SMA": "T̂_d / SMA_30(T), V̂_d / SMA_30(V) - Standard Simple Moving Average",
-        "EWMA": "T̂_d / EWMA_30(T), V̂_d / EWMA_30(V) - Exponentially Weighted (robust gegen Ausreißer)",
-        "MEDIAN": "T̂_d / Median_30(T), V̂_d / Median_30(V) - Rolling Median (robust gegen Extremwerte)"
-    }
-    
-    return {
-        "version": "0.1",
-        "description": "Whale Activity Index - Adaptive Skalierung mit robuster Baseline",
-        "formula": {
-            "normalization": {
-                "baseline_type": baseline_type,
-                "T_normalized": baseline_formulas.get(baseline_type, baseline_formulas["SMA"]),
-                "V_normalized": "Analog zu Transaction Count",
-                "description": f"Normalisierung durch {baseline_type} Basislinie (180-Tage Percentile-Fenster)"
-            },
-            "wai_calculation": {
-                "formula": "WAI_raw = 0.5 · T̂_d + 0.5 · V̂_d",
-                "weights": {
-                    "transaction_count": 0.5,
-                    "volume": 0.5
-                },
-                "description": "Gleichgewichtete Kombination von normalisierten Transaktionen und Volumen"
-            },
-            "percentile_scaling": {
-                "formula": "WAI_percentile = PercentileRank(WAI_raw, window=180 Tage)",
-                "range": "[0, 1]",
-                "description": "Historisch adaptive Skalierung basierend auf 180-Tage-Fenster"
-            },
-            "final_output": {
-                "formula": "WAI_index = round(WAI_percentile × 100)",
-                "range": "[0, 100]",
-                "description": "Gerundeter Indexwert ohne harte Grenzen"
-            }
-        },
-        "parameters": {
-            "SMA_window": config.SMA_WINDOW,
-            "baseline_method": config.USE_ROBUST_BASELINE,
-            "ewma_span": config.EWMA_SPAN,
-            "percentile_window": 180,
-            "data_source": config.DATA_URL
-        },
-        "interpretation": {
-            "very_low": "0-25: Sehr niedrige Whale-Aktivität",
-            "low": "25-50: Unterdurchschnittliche Whale-Aktivität",
-            "normal": "50-75: Normale Whale-Aktivität",
-            "high": "75-100: Überdurchschnittliche bis sehr hohe Whale-Aktivität"
-        }
-    }
-
-
-@app.get("/api/wai/comparison")
-async def get_wai_comparison():
-    """
-    Vergleicht den alten WAI-Index (linear, 50/50) mit dem neuen WAI-Index v2 (percentile, dynamisch).
-    
-    Analyse umfasst:
-    - Statistische Vergleiche (Mean, Median, Std, Min, Max)
-    - Häufigkeit von Index = 100
-    - Histogramm-Verteilung (5er-Buckets)
-    - Sensitivität in Hochaktivitätsphasen (> 75)
-    - Dynamische Gewichts-Analyse
-    - Key Findings
-    
-    Returns:
-        JSON-Summary mit detaillierten Vergleichsmetriken
+    Interpretation:
+        - > 20: Starke Beschleunigung
+        - 10-20: Beschleunigung
+        - -10 bis 10: Neutral
+        - -20 bis -10: Verlangsamung
+        - < -20: Starke Verlangsamung
     """
     try:
-        result = await wai_service.calculate_wai_comparison()
-        return result
+        # Hole Daten mit Momentum-Berechnung
+        result = await wai_service.get_wai_data(limit=limit)
+        
+        # Extrahiere relevante Momentum-Felder
+        momentum_data = []
+        for item in result:
+            momentum_data.append({
+                'date': item['date'],
+                'wai': item['wai'],
+                'wai_7d_avg': item['wai_7d_avg'],
+                'whale_momentum': item['whale_momentum'],
+                'momentum_signal': item['momentum_signal']
+            })
+        
+        return {
+            "count": len(momentum_data),
+            "data": momentum_data,
+            "interpretation": {
+                "strong_acceleration": "Momentum > 20 - Stark steigende Whale-Aktivität",
+                "acceleration": "Momentum 10-20 - Steigende Whale-Aktivität",
+                "neutral": "Momentum -10 bis 10 - Stabile Aktivität",
+                "deceleration": "Momentum -20 bis -10 - Abnehmende Aktivität",
+                "strong_deceleration": "Momentum < -20 - Stark abnehmende Aktivität"
+            }
+        }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Fehler beim Vergleich: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Fehler beim Abrufen des Momentums: {str(e)}")
+
+
+@app.get("/api/wai/confidence")
+async def get_confidence_score(
+    limit: Optional[int] = Query(10, ge=1, le=100, description="Max. Anzahl Ergebnisse (1-100)")
+):
+    """
+    Gibt Confidence Scores zurück - bewertet die Verlässlichkeit des WAI-Signals.
+    
+    Der Confidence Score kombiniert:
+    - Anzahl der Whale-Transaktionen
+    - Exchange-Aktivität
+    - Abweichung vom historischen Median
+    
+    Query Parameters:
+        - limit: Maximale Anzahl der Ergebnisse (neueste zuerst, default: 10)
+    
+    Returns:
+        - `confidence_score`: Score 0-100 (höher = verlässlicher)
+        - `confidence_level`: Klassifikation (very_high | high | moderate | low)
+        - `wai`: Aktueller WAI-Wert
+        - `tx_count`: Anzahl Whale-Transaktionen
+    
+    Interpretation:
+        - > 80: Sehr hohe Confidence (starkes, verlässliches Signal)
+        - 60-80: Hohe Confidence (verlässlich)
+        - 40-60: Moderate Confidence (mit Vorsicht betrachten)
+        - < 40: Niedrige Confidence (schwaches Signal)
+    """
+    try:
+        # Hole Daten mit Confidence-Berechnung
+        result = await wai_service.get_wai_data(limit=limit)
+        
+        # Extrahiere relevante Confidence-Felder
+        confidence_data = []
+        for item in result:
+            confidence_data.append({
+                'date': item['date'],
+                'wai': item['wai'],
+                'tx_count': item['tx_count'],
+                'confidence_score': item['confidence_score'],
+                'confidence_level': item['confidence_level']
+            })
+        
+        return {
+            "count": len(confidence_data),
+            "data": confidence_data,
+            "interpretation": {
+                "very_high": "Score > 80 - Sehr verlässliches Signal",
+                "high": "Score 60-80 - Verlässliches Signal",
+                "moderate": "Score 40-60 - Mit Vorsicht betrachten",
+                "low": "Score < 40 - Schwaches Signal"
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Fehler beim Abrufen des Confidence Scores: {str(e)}")
+
+
+@app.get("/api/wai/backtest")
+async def backtest_signal(
+    signal: str = Query(..., description="WII Signal-Typ zum Backtesten"),
+    horizon: int = Query(3, ge=1, le=30, description="Forward-Return Horizont (Tage, 1-30)")
+):
+    """
+    Führt einen historischen Backtest für WII-Signale aus.
+    
+    **Verfügbare WII-Signale:**
+    - `wii_accumulation`: Whale Akkumulation (WII > 70) - Bullish Signal
+    - `wii_strong_accumulation`: Starke Akkumulation (WII > 85) - Sehr Bullish
+    - `wii_selling`: Whale Verkaufsdruck (WII < 30) - Bearish Signal
+    - `wii_strong_selling`: Starker Verkaufsdruck (WII < 15) - Sehr Bearish
+    
+    **Wichtig:** 
+    - Bei **bullish** Signalen (accumulation): Positive Returns = Win
+    - Bei **bearish** Signalen (selling): Negative Returns = Win (Short Position)
+    
+    Query Parameters:
+        - signal: WII Signal-Typ (siehe oben)
+        - horizon: Forward-Return Horizont in Tagen (default: 3)
+    
+    Returns:
+        - **win_rate**: % der korrekten Prognosen
+        - **avg_return**: Durchschnittlicher Return (%)
+        - **median_return**: Medianer Return (%)
+        - **max_drawdown**: Maximaler Drawdown (%)
+        - **sharpe_ratio**: Risk-adjusted Return
+        - **profit_factor**: Total Wins / Total Losses
+        - **prediction_stats**: Detaillierte Statistiken zu Correct/Incorrect
+        - **interpretation**: Automatische Analyse (bearish/bullish-aware)
+    
+    Beispiel:
+        `/api/wai/backtest?signal=wii_selling&horizon=7`
+    
+    Interpretation:
+        - Win Rate > 55%: Signal zeigt gute Vorhersagekraft
+        - Bearish Signale: Negative Avg Return = gut (Preis fällt wie vorhergesagt)
+        - Bullish Signale: Positive Avg Return = gut (Preis steigt wie vorhergesagt)
+        - Sharpe > 1.0: Gutes Risk/Reward-Verhältnis
+    """
+    try:
+        result = await wai_service.backtest_signal(
+            signal_type=signal,
+            horizon=horizon
+        )
+        
+        # Wenn Fehler im Result, passenden Status Code returnen
+        if 'error' in result:
+            if 'Unbekannter Signal-Typ' in result.get('error', ''):
+                raise HTTPException(
+                    status_code=400,
+                    detail=result['error'] + '. Available: ' + ', '.join(result.get('available_signals', []))
+                )
+            else:
+                raise HTTPException(status_code=400, detail=result['error'])
+        
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Fehler beim Backtest: {str(e)}")
 
 
 @app.get("/api/wai/validation")

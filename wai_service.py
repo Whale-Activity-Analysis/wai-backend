@@ -260,6 +260,144 @@ class WAIService:
         
         return result
     
+    def calculate_whale_momentum(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Berechnet den Whale Momentum Indikator.
+        
+        Whale Momentum zeigt die Beschleunigung oder Verlangsamung der Whale-Aktivität:
+        
+        Momentum = WAI_today - WAI_7d_avg
+        
+        Interpretation:
+        - Stark positiv (>20): Beschleunigung der Whale-Aktivität
+        - Neutral (-10 bis +10): Stabile Aktivität
+        - Stark negativ (<-20): Abnehmende Aktivität
+        
+        Momentum wirkt oft intuitiver als absolute Level-Werte.
+        
+        Returns:
+            DataFrame mit zusätzlicher 'whale_momentum' Spalte
+        """
+        result = df.copy()
+        
+        # Stelle sicher, dass WAI berechnet ist
+        if 'wai' not in result.columns:
+            result = self.calculate_wai(result)
+        
+        # 7-Tage gleitender Durchschnitt des WAI
+        result['wai_7d_avg'] = result['wai'].rolling(window=7, min_periods=1).mean()
+        
+        # Momentum = Aktueller WAI - 7-Tage-Durchschnitt
+        result['whale_momentum'] = result['wai'] - result['wai_7d_avg']
+        
+        # Signal-Klassifikation
+        def classify_momentum(momentum):
+            if pd.isna(momentum):
+                return 'neutral'
+            elif momentum > 20:
+                return 'strong_acceleration'
+            elif momentum > 10:
+                return 'acceleration'
+            elif momentum < -20:
+                return 'strong_deceleration'
+            elif momentum < -10:
+                return 'deceleration'
+            else:
+                return 'neutral'
+        
+        result['momentum_signal'] = result['whale_momentum'].apply(classify_momentum)
+        
+        return result
+    
+    def calculate_confidence_score(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Berechnet einen Confidence Score für die Signalqualität.
+        
+        Der Confidence Score bewertet, wie verlässlich das heutige Signal ist,
+        basierend auf mehreren Faktoren:
+        
+        1. Anzahl der Whale-Transaktionen (mehr = höhere Confidence)
+        2. Exchange-Whale-Aktivität (mehr Daten = besser)
+        3. Abweichung vom historischen Median (extreme Werte = niedriger)
+        
+        Score-Berechnung:
+        - TX Count Score: normalisiert auf [0, 1] basierend auf historischem Percentile
+        - Exchange Activity Score: basierend auf Exchange-TX-Count
+        - Volatility Penalty: Reduktion bei extremen Abweichungen
+        
+        Confidence Score = (TX_Score * 0.4 + Exchange_Score * 0.3 + Stability_Score * 0.3) * 100
+        
+        Interpretation:
+        - > 80: Sehr hohe Confidence (starkes, verlässliches Signal)
+        - 60-80: Hohe Confidence (verlässlich)
+        - 40-60: Moderate Confidence (mit Vorsicht betrachten)
+        - < 40: Niedrige Confidence (schwaches Signal)
+        
+        Returns:
+            DataFrame mit 'confidence_score' und 'confidence_level' Spalten
+        """
+        result = df.copy()
+        
+        # 1. TX Count Score: Je mehr Whale-TXs, desto besser
+        # Verwende Percentile Rank über 90-Tage-Fenster
+        tx_count_percentile = self.calculate_percentile_rank(
+            result['whale_tx_count'],
+            window=90
+        )
+        tx_count_score = tx_count_percentile
+        
+        # 2. Exchange Activity Score: Kombiniert exchange_whale_tx_count
+        if 'exchange_whale_tx_count' in result.columns:
+            exchange_tx_percentile = self.calculate_percentile_rank(
+                result['exchange_whale_tx_count'],
+                window=90
+            )
+            exchange_activity_score = exchange_tx_percentile
+        else:
+            # Fallback: Verwende Netflow als Proxy
+            total_exchange_flow = result['exchange_inflow_btc'] + result['exchange_outflow_btc']
+            exchange_flow_percentile = self.calculate_percentile_rank(
+                total_exchange_flow,
+                window=90
+            )
+            exchange_activity_score = exchange_flow_percentile
+        
+        # 3. Stability Score: Penalty für extreme Abweichungen vom Median
+        # Berechne Rolling Median für TX Count
+        median_tx_count = result['whale_tx_count'].rolling(window=30, min_periods=1).median()
+        deviation = ((result['whale_tx_count'] - median_tx_count) / median_tx_count).abs()
+        
+        # Je größer die Abweichung, desto kleiner der Stability Score
+        # Verwende exponentiellen Decay: e^(-deviation)
+        stability_score = np.exp(-deviation)
+        stability_score = stability_score.fillna(0.5)  # Default für erste Tage
+        
+        # Gesamter Confidence Score (gewichteter Durchschnitt)
+        result['confidence_score'] = (
+            0.4 * tx_count_score +
+            0.3 * exchange_activity_score +
+            0.3 * stability_score
+        ) * 100
+        
+        result['confidence_score'] = result['confidence_score'].round(1)
+        
+        # Confidence Level Klassifikation
+        def classify_confidence(score):
+            if pd.isna(score):
+                return 'unknown'
+            elif score >= 80:
+                return 'very_high'
+            elif score >= 60:
+                return 'high'
+            elif score >= 40:
+                return 'moderate'
+            else:
+                return 'low'
+        
+        result['confidence_level'] = result['confidence_score'].apply(classify_confidence)
+        
+        return result
+    
     def calculate_wii(self, df: pd.DataFrame) -> pd.DataFrame:
         """
         Berechnet den Whale Intent Index (WII) - Was wollen die Whales?
@@ -379,6 +517,17 @@ class WAIService:
         df_with_wai['wii_signal'] = df_with_wii['wii_signal']
         df_with_wai['netflow_ratio'] = df_with_wii['netflow_ratio']
         
+        # Whale Momentum berechnen
+        df_with_momentum = self.calculate_whale_momentum(df_with_wai)
+        df_with_wai['whale_momentum'] = df_with_momentum['whale_momentum']
+        df_with_wai['momentum_signal'] = df_with_momentum['momentum_signal']
+        df_with_wai['wai_7d_avg'] = df_with_momentum['wai_7d_avg']
+        
+        # Confidence Score berechnen
+        df_with_confidence = self.calculate_confidence_score(df_with_wai)
+        df_with_wai['confidence_score'] = df_with_confidence['confidence_score']
+        df_with_wai['confidence_level'] = df_with_confidence['confidence_level']
+        
         # Filtern nach Datumsbereich
         if start_date:
             start = pd.to_datetime(start_date)
@@ -408,6 +557,11 @@ class WAIService:
                 'wai_v1': int(round(float(row['wai_v1']))),
                 'wii': int(round(float(row['wii']))),
                 'wii_signal': str(row['wii_signal']),
+                'whale_momentum': round(float(row['whale_momentum']), 2),
+                'momentum_signal': str(row['momentum_signal']),
+                'wai_7d_avg': round(float(row['wai_7d_avg']), 1),
+                'confidence_score': round(float(row['confidence_score']), 1),
+                'confidence_level': str(row['confidence_level']),
                 'tx_count': int(row['whale_tx_count']),
                 'volume': round(float(row['whale_tx_volume_btc']), 2),
                 'exchange_inflow': round(float(row['exchange_inflow_btc']), 2),
@@ -989,3 +1143,261 @@ class WAIService:
             }
         
         return {'error': 'Nicht genug Daten'}
+    
+    async def backtest_signal(self, signal_type: str, horizon: int = 3) -> Dict:
+        """
+        Führt einen historischen Backtest für WII-Signale aus.
+        
+        Args:
+            signal_type: Art des WII-Signals
+                - 'wii_accumulation': WII > 70 (Bullish - Akkumulation)
+                - 'wii_strong_accumulation': WII > 85 (Sehr Bullish)
+                - 'wii_selling': WII < 30 (Bearish - Verkaufsdruck)
+                - 'wii_strong_selling': WII < 15 (Sehr Bearish)
+            horizon: Forward-Return Horizont in Tagen (3, 7, 14, 30)
+        
+        Returns:
+            Dictionary mit Backtest-Ergebnissen:
+            - win_rate: Anteil korrekter Prognosen
+            - avg_return: Durchschnittlicher Return
+            - median_return: Medianer Return
+            - max_drawdown: Maximaler Drawdown
+            - total_signals: Anzahl der Signale
+            - profitable_trades: Anzahl korrekter Prognosen
+            
+        Wichtig: Bei bearish Signalen (wii_selling) zählen negative Returns als Win!
+        """
+        # Daten laden und WII berechnen
+        df = await self.fetch_daily_metrics()
+        
+        df_wii = self.calculate_wii(df)
+        df['wii'] = df_wii['wii']
+        df['wii_signal'] = df_wii['wii_signal']
+        
+        # BTC-Preisdaten müssen vorhanden sein
+        if 'btc_close' not in df.columns or df['btc_close'].isna().all():
+            return {
+                'error': 'BTC-Preisdaten nicht verfügbar',
+                'signal_type': signal_type,
+                'horizon': horizon
+            }
+        
+        # Forward Returns berechnen
+        df[f'return_{horizon}d'] = df['btc_close'].pct_change(horizon).shift(-horizon)
+        
+        # WII-Signal-Bedingungen definieren
+        signal_conditions = {
+            'wii_accumulation': df['wii'] > 70,
+            'wii_strong_accumulation': df['wii'] > 85,
+            'wii_selling': df['wii'] < 30,
+            'wii_strong_selling': df['wii'] < 15
+        }
+        
+        # Bearish Signale (negative Returns = Win)
+        bearish_signals = ['wii_selling', 'wii_strong_selling']
+        is_bearish = signal_type in bearish_signals
+        
+        # Signal-Typ validieren
+        if signal_type not in signal_conditions:
+            return {
+                'error': f'Unbekannter Signal-Typ: {signal_type}',
+                'available_signals': list(signal_conditions.keys()),
+                'horizon': horizon
+            }
+        
+        # Signale filtern
+        signal_mask = signal_conditions[signal_type]
+        signals_df = df[signal_mask].copy()
+        
+        # NaN-Returns entfernen (letzte N Tage ohne Forward-Returns)
+        signals_df = signals_df.dropna(subset=[f'return_{horizon}d'])
+        
+        if len(signals_df) == 0:
+            return {
+                'signal_type': signal_type,
+                'horizon': horizon,
+                'total_signals': 0,
+                'message': 'Keine Signale für diesen Zeitraum gefunden'
+            }
+        
+        # Backtest-Metriken berechnen
+        returns = signals_df[f'return_{horizon}d']
+        
+        # Win Rate - UNTERSCHIEDLICH für bullish/bearish
+        if is_bearish:
+            # Bei bearish Signalen: negative Returns = Win
+            wins = (returns < 0).sum()
+            win_condition = "Preis fiel (negativ)"
+        else:
+            # Bei bullish Signalen: positive Returns = Win
+            wins = (returns > 0).sum()
+            win_condition = "Preis stieg (positiv)"
+        
+        win_rate = (wins / len(returns)) * 100
+        
+        # Average & Median Returns (immer gleich berechnet)
+        avg_return = returns.mean() * 100  # In Prozent
+        median_return = returns.median() * 100
+        
+        # Correct vs Incorrect Predictions
+        correct_predictions = wins
+        incorrect_predictions = len(returns) - wins
+        
+        # Average Win/Loss - für bearish umgekehrt
+        if is_bearish:
+            avg_correct = returns[returns < 0].mean() * 100 if wins > 0 else 0.0
+            avg_incorrect = returns[returns >= 0].mean() * 100 if incorrect_predictions > 0 else 0.0
+        else:
+            avg_correct = returns[returns > 0].mean() * 100 if wins > 0 else 0.0
+            avg_incorrect = returns[returns <= 0].mean() * 100 if incorrect_predictions > 0 else 0.0
+        
+        # Max Drawdown (für bearish invertiert, da wir short Position simulieren)
+        if is_bearish:
+            # Für bearish: invertiere Returns (short position)
+            inverted_returns = -returns
+            cumulative_returns = (1 + inverted_returns).cumprod()
+        else:
+            cumulative_returns = (1 + returns).cumprod()
+        
+        running_max = cumulative_returns.expanding().max()
+        drawdown = (cumulative_returns / running_max) - 1
+        max_drawdown = drawdown.min() * 100  # In Prozent
+        
+        # Sharpe Ratio (annualisiert)
+        if is_bearish:
+            sharpe_returns = -returns  # Für short position invertieren
+        else:
+            sharpe_returns = returns
+        
+        if sharpe_returns.std() > 0:
+            sharpe_ratio = (sharpe_returns.mean() / sharpe_returns.std()) * np.sqrt(365 / horizon)
+        else:
+            sharpe_ratio = 0.0
+        
+        # Profit Factor - für bearish angepasst
+        if is_bearish:
+            total_correct = abs(returns[returns < 0].sum()) if wins > 0 else 0
+            total_incorrect = returns[returns >= 0].sum() if incorrect_predictions > 0 else 1
+        else:
+            total_correct = returns[returns > 0].sum() if wins > 0 else 0
+            total_incorrect = abs(returns[returns <= 0].sum()) if incorrect_predictions > 0 else 1
+        
+        profit_factor = total_correct / total_incorrect if total_incorrect > 0 else float('inf')
+        
+        # Signal-Beschreibung
+        signal_descriptions = {
+            'wii_accumulation': 'WII Akkumulation (WII > 70) - Bullish',
+            'wii_strong_accumulation': 'WII Starke Akkumulation (WII > 85) - Sehr Bullish',
+            'wii_selling': 'WII Verkaufsdruck (WII < 30) - Bearish',
+            'wii_strong_selling': 'WII Starker Verkaufsdruck (WII < 15) - Sehr Bearish'
+        }
+        
+        return {
+            'signal_type': signal_type,
+            'signal_description': signal_descriptions.get(signal_type, signal_type),
+            'signal_direction': 'bearish' if is_bearish else 'bullish',
+            'horizon_days': horizon,
+            'total_signals': len(signals_df),
+            'date_range': {
+                'start': signals_df['date'].min().strftime('%Y-%m-%d'),
+                'end': signals_df['date'].max().strftime('%Y-%m-%d')
+            },
+            'performance': {
+                'win_rate': round(float(win_rate), 2),
+                'avg_return': round(float(avg_return), 2),
+                'median_return': round(float(median_return), 2),
+                'max_drawdown': round(float(max_drawdown), 2),
+                'sharpe_ratio': round(float(sharpe_ratio), 3)
+            },
+            'prediction_stats': {
+                'correct_predictions': int(correct_predictions),
+                'incorrect_predictions': int(incorrect_predictions),
+                'avg_return_when_correct': round(float(avg_correct), 2),
+                'avg_return_when_incorrect': round(float(avg_incorrect), 2),
+                'profit_factor': round(float(profit_factor), 2) if profit_factor != float('inf') else 'Inf',
+                'win_condition': win_condition
+            },
+            'interpretation': self._interpret_backtest_results(win_rate, avg_return, sharpe_ratio, signal_type, is_bearish)
+        }
+    
+    def _interpret_backtest_results(self, win_rate: float, avg_return: float, sharpe_ratio: float, 
+                                   signal_type: str, is_bearish: bool = False) -> Dict:
+        """Interpretiere Backtest-Ergebnisse (bearish vs bullish-aware)"""
+        
+        # Win Rate Interpretation
+        if win_rate >= 60:
+            win_rate_desc = 'Sehr gut - Signal zeigt starke Vorhersagekraft'
+        elif win_rate >= 50:
+            win_rate_desc = 'Gut - Signal ist profitabel'
+        elif win_rate >= 45:
+            win_rate_desc = 'Neutral - Signal nahe Break-Even'
+        else:
+            win_rate_desc = 'Schwach - Signal zeigt wenig Vorhersagekraft'
+        
+        # Return Interpretation - UNTERSCHIEDLICH für bearish/bullish
+        if is_bearish:
+            # Bei bearish wollen wir NEGATIVE Returns (Preis fällt = richtige Prognose)
+            if avg_return <= -2.0:
+                return_desc = 'Exzellent - Starke negative Returns (Signal funktioniert)'
+            elif avg_return <= -1.0:
+                return_desc = 'Gut - Negative Returns (Signal funktioniert)'
+            elif avg_return <= 0:
+                return_desc = 'Schwach - Minimal negative Returns'
+            else:
+                return_desc = 'Negativ - Positive Returns (Signal funktioniert nicht)'
+        else:
+            # Bei bullish wollen wir POSITIVE Returns
+            if avg_return >= 2.0:
+                return_desc = 'Exzellent - Starke durchschnittliche Returns'
+            elif avg_return >= 1.0:
+                return_desc = 'Gut - Positive durchschnittliche Returns'
+            elif avg_return >= 0:
+                return_desc = 'Schwach - Minimal positive Returns'
+            else:
+                return_desc = 'Negativ - Verluste im Durchschnitt'
+        
+        # Sharpe Interpretation
+        if sharpe_ratio >= 1.5:
+            sharpe_desc = 'Exzellent - Sehr gutes Risk/Reward-Verhältnis'
+        elif sharpe_ratio >= 1.0:
+            sharpe_desc = 'Gut - Solides Risk/Reward-Verhältnis'
+        elif sharpe_ratio >= 0.5:
+            sharpe_desc = 'Moderat - Akzeptables Risk/Reward'
+        else:
+            sharpe_desc = 'Schwach - Hohes Risiko für Return'
+        
+        # Gesamtbewertung - angepasst für bearish/bullish
+        score = 0
+        if win_rate >= 55:
+            score += 1
+        
+        if is_bearish:
+            # Für bearish: negative returns sind gut
+            if avg_return <= -1.0:
+                score += 1
+        else:
+            # Für bullish: positive returns sind gut
+            if avg_return >= 1.0:
+                score += 1
+        
+        if sharpe_ratio >= 1.0:
+            score += 1
+        
+        signal_direction = "bearish (Short)" if is_bearish else "bullish (Long)"
+        
+        if score >= 2:
+            overall = f'✅ {signal_direction.capitalize()} Signal zeigt starke historische Performance'
+        elif score == 1:
+            overall = f'⚠️ {signal_direction.capitalize()} Signal zeigt gemischte Ergebnisse'
+        else:
+            overall = f'❌ {signal_direction.capitalize()} Signal zeigt schwache historische Performance'
+        
+        return {
+            'signal_direction': signal_direction,
+            'win_rate_assessment': win_rate_desc,
+            'return_assessment': return_desc,
+            'sharpe_assessment': sharpe_desc,
+            'overall_assessment': overall,
+            'recommendation': 'Nutze Signal mit Vorsicht und kombiniere mit anderen Indikatoren' if score < 2 else 'Signal zeigt robuste Vorhersagekraft'
+        }
+
