@@ -1,11 +1,11 @@
 {
   "metadata": {
-    "collected_at": "2026-02-22T02:12:15.957163Z",
+    "collected_at": "2026-02-22T04:29:14.061731Z",
     "record_count": 61
   },
   "data": [
     {
-      "date": "2026-02-21",
+      "date": "2026-02-22",
       "wai": 28,
       "wai_v1": 2,
       "wii": 50,
@@ -21,9 +21,9 @@
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
       "netflow_ratio": 0.0,
-      "btc_close": 67970.29,
-      "btc_return_1d": 0.0157,
-      "btc_volatility_7d": 0.0172
+      "btc_close": 67977.91,
+      "btc_return_1d": 0.0001,
+      "btc_volatility_7d": 0.0132
     },
     {
       "date": "2026-02-20",

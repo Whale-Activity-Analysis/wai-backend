@@ -1,7 +1,7 @@
 {
   "data_points": 61,
   "date_range": {
-    "start": "2026-02-21",
+    "start": "2026-02-22",
     "end": "2025-12-21"
   },
   "accumulation": {
@@ -55,7 +55,7 @@
         "sample_size": 46
       },
       "7d": {
-        "avg_return_pct": -1.17,
+        "avg_return_pct": -1.16,
         "sample_size": 46
       },
       "14d": {
