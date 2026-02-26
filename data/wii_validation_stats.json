@@ -26,7 +26,7 @@
     }
   },
   "selling_pressure": {
-    "count": 10,
+    "count": 11,
     "signal": "WII < 30 (Whales Verkaufen)",
     "returns": {
       "3d": {
@@ -47,7 +47,7 @@
     }
   },
   "neutral": {
-    "count": 49,
+    "count": 48,
     "signal": "WII 30-70 (Neutral)",
     "returns": {
       "3d": {
