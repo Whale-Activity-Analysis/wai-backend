@@ -183,6 +183,7 @@ def generate_marketing_message(stats: Dict) -> str:
     
     return " | ".join(messages) if messages else "WII Daten werden analysiert..."
 
+
 def analyze_wii_validation():
     """
     Validiert: Ist WII Signal wirklich vorhersagbar?
