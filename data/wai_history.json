@@ -1,26 +1,26 @@
 {
   "metadata": {
-    "collected_at": "2026-03-15T10:30:49.737446Z",
+    "collected_at": "2026-03-15T11:26:53.666903Z",
     "record_count": 80
   },
   "data": [
     {
       "date": "2026-03-15",
       "wai": 74,
-      "wai_v1": 98,
-      "wii": 18,
-      "wii_signal": "selling_pressure",
+      "wai_v1": 99,
+      "wii": 90,
+      "wii_signal": "accumulation",
       "whale_momentum": 7.86,
       "momentum_signal": "neutral",
       "wai_7d_avg": 66.1,
-      "confidence_score": 71.1,
+      "confidence_score": 70.8,
       "confidence_level": "high",
-      "tx_count": 18,
-      "volume": 14400.87,
+      "tx_count": 20,
+      "volume": 15886.62,
       "exchange_inflow": 4748.33,
-      "exchange_outflow": 4035.81,
-      "exchange_netflow": 712.52,
-      "netflow_ratio": -0.0811,
+      "exchange_outflow": 5521.56,
+      "exchange_netflow": -773.23,
+      "netflow_ratio": 0.0753,
       "btc_close": 71217.1,
       "btc_return_1d": 0.0035,
       "btc_volatility_7d": 0.0261
