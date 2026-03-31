@@ -1,22 +1,22 @@
 {
   "metadata": {
-    "collected_at": "2026-03-31T22:59:19.528879Z",
+    "collected_at": "2026-03-31T23:43:04.448632Z",
     "record_count": 94
   },
   "data": [
     {
       "date": "2026-03-31",
-      "wai": 37,
-      "wai_v1": 46,
+      "wai": 40,
+      "wai_v1": 51,
       "wii": 50,
       "wii_signal": "neutral",
-      "whale_momentum": -1.43,
+      "whale_momentum": 1.14,
       "momentum_signal": "neutral",
-      "wai_7d_avg": 38.4,
-      "confidence_score": 57.8,
-      "confidence_level": "moderate",
-      "tx_count": 4,
-      "volume": 1357.21,
+      "wai_7d_avg": 38.9,
+      "confidence_score": 64.6,
+      "confidence_level": "high",
+      "tx_count": 5,
+      "volume": 1570.11,
       "exchange_inflow": 0.0,
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
