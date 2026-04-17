@@ -9,7 +9,7 @@
     "signal": "WII > 70 (Whales Kaufen)",
     "returns": {
       "3d": {
-        "avg_return_pct": -0.49,
+        "avg_return_pct": -0.48,
         "win_rate_pct": 53.8,
         "sample_size": 13
       },
@@ -26,7 +26,7 @@
     }
   },
   "selling_pressure": {
-    "count": 15,
+    "count": 16,
     "signal": "WII < 30 (Whales Verkaufen)",
     "returns": {
       "3d": {
@@ -47,7 +47,7 @@
     }
   },
   "neutral": {
-    "count": 82,
+    "count": 81,
     "signal": "WII 30-70 (Neutral)",
     "returns": {
       "3d": {
