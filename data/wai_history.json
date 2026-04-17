@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "collected_at": "2026-04-17T22:39:42.593446Z",
+    "collected_at": "2026-04-17T23:39:34.837116Z",
     "record_count": 110
   },
   "data": [
@@ -15,8 +15,8 @@
       "wai_7d_avg": 62.0,
       "confidence_score": 69.4,
       "confidence_level": "high",
-      "tx_count": 28,
-      "volume": 20456.54,
+      "tx_count": 29,
+      "volume": 20701.56,
       "exchange_inflow": 4300.46,
       "exchange_outflow": 5542.24,
       "exchange_netflow": -1241.78,
