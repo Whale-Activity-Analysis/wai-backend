@@ -1,7 +1,7 @@
 {
-  "data_points": 110,
+  "data_points": 111,
   "date_range": {
-    "start": "2026-04-17",
+    "start": "2026-04-18",
     "end": "2025-12-21"
   },
   "accumulation": {
@@ -9,19 +9,19 @@
     "signal": "WII > 70 (Whales Kaufen)",
     "returns": {
       "3d": {
-        "avg_return_pct": -0.48,
-        "win_rate_pct": 53.8,
-        "sample_size": 13
+        "avg_return_pct": -0.17,
+        "win_rate_pct": 57.1,
+        "sample_size": 14
       },
       "7d": {
-        "avg_return_pct": -1.04,
-        "win_rate_pct": 53.8,
-        "sample_size": 13
+        "avg_return_pct": -0.63,
+        "win_rate_pct": 57.1,
+        "sample_size": 14
       },
       "14d": {
-        "avg_return_pct": -1.13,
-        "win_rate_pct": 61.5,
-        "sample_size": 13
+        "avg_return_pct": -0.71,
+        "win_rate_pct": 64.3,
+        "sample_size": 14
       }
     }
   },
@@ -30,24 +30,24 @@
     "signal": "WII < 30 (Whales Verkaufen)",
     "returns": {
       "3d": {
-        "avg_return_pct": -1.83,
+        "avg_return_pct": -1.77,
         "decline_rate_pct": 73.3,
         "sample_size": 15
       },
       "7d": {
-        "avg_return_pct": -2.1,
+        "avg_return_pct": -2.04,
         "decline_rate_pct": 66.7,
         "sample_size": 15
       },
       "14d": {
-        "avg_return_pct": -3.41,
+        "avg_return_pct": -3.34,
         "decline_rate_pct": 60.0,
         "sample_size": 15
       }
     }
   },
   "neutral": {
-    "count": 81,
+    "count": 82,
     "signal": "WII 30-70 (Neutral)",
     "returns": {
       "3d": {
@@ -55,14 +55,14 @@
         "sample_size": 81
       },
       "7d": {
-        "avg_return_pct": -0.07,
+        "avg_return_pct": -0.05,
         "sample_size": 81
       },
       "14d": {
-        "avg_return_pct": -0.42,
+        "avg_return_pct": -0.35,
         "sample_size": 81
       }
     }
   },
-  "marketing_message": "WII Accumulation: 56% Hitrate | WII Selling: 67% Accuracy | Overall: 62%"
+  "marketing_message": "WII Accumulation: 60% Hitrate | WII Selling: 67% Accuracy | Overall: 63%"
 }
