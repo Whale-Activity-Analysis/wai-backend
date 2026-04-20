@@ -1,46 +1,46 @@
 {
-  "data_points": 112,
+  "data_points": 113,
   "date_range": {
-    "start": "2026-04-19",
+    "start": "2026-04-20",
     "end": "2025-12-21"
   },
   "accumulation": {
-    "count": 14,
+    "count": 16,
     "signal": "WII > 70 (Whales Kaufen)",
     "returns": {
       "3d": {
-        "avg_return_pct": -0.25,
-        "win_rate_pct": 57.1,
-        "sample_size": 14
+        "avg_return_pct": -0.47,
+        "win_rate_pct": 53.3,
+        "sample_size": 15
       },
       "7d": {
-        "avg_return_pct": -0.7,
-        "win_rate_pct": 57.1,
-        "sample_size": 14
+        "avg_return_pct": -0.96,
+        "win_rate_pct": 53.3,
+        "sample_size": 15
       },
       "14d": {
-        "avg_return_pct": -0.78,
-        "win_rate_pct": 64.3,
-        "sample_size": 14
+        "avg_return_pct": -1.04,
+        "win_rate_pct": 60.0,
+        "sample_size": 15
       }
     }
   },
   "selling_pressure": {
-    "count": 17,
+    "count": 16,
     "signal": "WII < 30 (Whales Verkaufen)",
     "returns": {
       "3d": {
-        "avg_return_pct": -1.77,
+        "avg_return_pct": -1.85,
         "decline_rate_pct": 75.0,
         "sample_size": 16
       },
       "7d": {
-        "avg_return_pct": -2.02,
+        "avg_return_pct": -2.13,
         "decline_rate_pct": 68.8,
         "sample_size": 16
       },
       "14d": {
-        "avg_return_pct": -3.25,
+        "avg_return_pct": -3.36,
         "decline_rate_pct": 62.5,
         "sample_size": 16
       }
@@ -55,14 +55,14 @@
         "sample_size": 81
       },
       "7d": {
-        "avg_return_pct": -0.04,
+        "avg_return_pct": -0.05,
         "sample_size": 81
       },
       "14d": {
-        "avg_return_pct": -0.31,
+        "avg_return_pct": -0.32,
         "sample_size": 81
       }
     }
   },
-  "marketing_message": "WII Accumulation: 60% Hitrate | WII Selling: 69% Accuracy | Overall: 64%"
+  "marketing_message": "WII Accumulation: 56% Hitrate | WII Selling: 69% Accuracy | Overall: 62%"
 }
