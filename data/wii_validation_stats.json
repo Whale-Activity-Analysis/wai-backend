@@ -1,7 +1,7 @@
 {
   "data_points": 117,
   "date_range": {
-    "start": "2026-04-25",
+    "start": "2026-04-26",
     "end": "2025-12-21"
   },
   "accumulation": {
@@ -19,7 +19,7 @@
         "sample_size": 16
       },
       "14d": {
-        "avg_return_pct": -0.19,
+        "avg_return_pct": -0.18,
         "win_rate_pct": 68.8,
         "sample_size": 16
       }
@@ -35,7 +35,7 @@
         "sample_size": 16
       },
       "7d": {
-        "avg_return_pct": -1.95,
+        "avg_return_pct": -1.94,
         "decline_rate_pct": 68.8,
         "sample_size": 16
       },
@@ -55,7 +55,7 @@
         "sample_size": 84
       },
       "7d": {
-        "avg_return_pct": -0.03,
+        "avg_return_pct": -0.02,
         "sample_size": 84
       },
       "14d": {
