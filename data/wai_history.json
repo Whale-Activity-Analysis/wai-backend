@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "collected_at": "2026-04-26T00:02:56.943133Z",
+    "collected_at": "2026-04-26T04:01:49.679843Z",
     "record_count": 117
   },
   "data": [
@@ -21,8 +21,8 @@
       "exchange_outflow": 0.0,
       "exchange_netflow": 0.0,
       "netflow_ratio": 0.0,
-      "btc_close": 77609.75,
-      "btc_return_1d": 0.0021,
+      "btc_close": 77619.14,
+      "btc_return_1d": 0.0023,
       "btc_volatility_7d": 0.0205
     },
     {
