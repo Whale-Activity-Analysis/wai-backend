@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "collected_at": "2026-05-03T13:12:13.645320Z",
+    "collected_at": "2026-05-03T14:28:20.517706Z",
     "record_count": 124
   },
   "data": [
@@ -13,10 +13,10 @@
       "whale_momentum": 11.14,
       "momentum_signal": "acceleration",
       "wai_7d_avg": 58.9,
-      "confidence_score": 66.3,
+      "confidence_score": 65.7,
       "confidence_level": "high",
-      "tx_count": 16,
-      "volume": 17611.91,
+      "tx_count": 17,
+      "volume": 18086.8,
       "exchange_inflow": 6369.48,
       "exchange_outflow": 4905.55,
       "exchange_netflow": 1463.93,
