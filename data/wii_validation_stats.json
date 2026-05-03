@@ -5,7 +5,7 @@
     "end": "2025-12-21"
   },
   "accumulation": {
-    "count": 19,
+    "count": 18,
     "signal": "WII > 70 (Whales Kaufen)",
     "returns": {
       "3d": {
@@ -26,7 +26,7 @@
     }
   },
   "selling_pressure": {
-    "count": 17,
+    "count": 18,
     "signal": "WII < 30 (Whales Verkaufen)",
     "returns": {
       "3d": {
