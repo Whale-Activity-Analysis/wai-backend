@@ -1,5 +1,5 @@
 btc_close,btc_return_1d,btc_volatility_7d,confidence_level,confidence_score,date,exchange_inflow,exchange_netflow,exchange_outflow,momentum_signal,netflow_ratio,tx_count,volume,wai,wai_7d_avg,wai_v1,whale_momentum,wii,wii_signal
-78655.35,0.0062,0.0155,high,67.8,2026-05-03,4902.22,1465.32,3436.9,acceleration,-0.1757,13,14194.97,69,58.7,94,10.29,14,selling_pressure
+78655.35,0.0062,0.0155,high,66.3,2026-05-03,6369.48,1463.93,4905.55,acceleration,-0.1298,16,17611.91,70,58.9,98,11.14,14,selling_pressure
 78172.07,0.0247,0.0138,high,75.6,2026-05-02,0.0,-1535.25,1535.25,neutral,1.0,5,4533.96,61,56.7,69,4.29,100,accumulation
 76286.58,0.0068,0.0128,high,78.6,2026-05-01,556.42,-600.49,1156.91,neutral,0.3505,5,3827.09,60,58.1,69,1.86,92,accumulation
 75774.89,-0.0075,0.013,high,77.1,2026-04-30,3000.0,3000.0,0.0,neutral,-1.0,5,4746.58,60,59.6,74,0.43,9,selling_pressure
