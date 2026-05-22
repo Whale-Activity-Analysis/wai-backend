@@ -1,7 +1,7 @@
 {
-  "data_points": 140,
+  "data_points": 141,
   "date_range": {
-    "start": "2026-05-21",
+    "start": "2026-05-22",
     "end": "2025-12-21"
   },
   "accumulation": {
@@ -19,7 +19,7 @@
         "sample_size": 20
       },
       "14d": {
-        "avg_return_pct": 0.17,
+        "avg_return_pct": 0.16,
         "win_rate_pct": 65.0,
         "sample_size": 20
       }
@@ -47,20 +47,20 @@
     }
   },
   "neutral": {
-    "count": 100,
+    "count": 101,
     "signal": "WII 30-70 (Neutral)",
     "returns": {
       "3d": {
         "avg_return_pct": 0.01,
-        "sample_size": 99
+        "sample_size": 100
       },
       "7d": {
-        "avg_return_pct": -0.2,
-        "sample_size": 99
+        "avg_return_pct": -0.19,
+        "sample_size": 100
       },
       "14d": {
         "avg_return_pct": -0.25,
-        "sample_size": 99
+        "sample_size": 100
       }
     }
   },
