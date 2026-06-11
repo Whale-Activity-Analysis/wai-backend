@@ -1,9 +1,30 @@
 {
   "metadata": {
-    "collected_at": "2026-06-10T23:25:15.973207Z",
-    "record_count": 158
+    "collected_at": "2026-06-11T02:00:12.916202Z",
+    "record_count": 159
   },
   "data": [
+    {
+      "date": "2026-06-11",
+      "wai": 42,
+      "wai_v1": 12,
+      "wii": 100,
+      "wii_signal": "accumulation",
+      "whale_momentum": -11.57,
+      "momentum_signal": "deceleration",
+      "wai_7d_avg": 53.6,
+      "confidence_score": 40.4,
+      "confidence_level": "moderate",
+      "tx_count": 1,
+      "volume": 534.89,
+      "exchange_inflow": 0.0,
+      "exchange_outflow": 534.89,
+      "exchange_netflow": -534.89,
+      "netflow_ratio": 1.0,
+      "btc_close": 61492.51,
+      "btc_return_1d": -0.0027,
+      "btc_volatility_7d": 0.0193
+    },
     {
       "date": "2026-06-10",
       "wai": 53,
