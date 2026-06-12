@@ -1,7 +1,7 @@
 {
-  "data_points": 159,
+  "data_points": 160,
   "date_range": {
-    "start": "2026-06-11",
+    "start": "2026-06-12",
     "end": "2025-12-21"
   },
   "accumulation": {
@@ -9,19 +9,19 @@
     "signal": "WII > 70 (Whales Kaufen)",
     "returns": {
       "3d": {
-        "avg_return_pct": 0.14,
-        "win_rate_pct": 60.0,
-        "sample_size": 20
+        "avg_return_pct": 0.3,
+        "win_rate_pct": 61.9,
+        "sample_size": 21
       },
       "7d": {
-        "avg_return_pct": 0.12,
-        "win_rate_pct": 60.0,
-        "sample_size": 20
+        "avg_return_pct": 0.28,
+        "win_rate_pct": 61.9,
+        "sample_size": 21
       },
       "14d": {
-        "avg_return_pct": 0.07,
-        "win_rate_pct": 65.0,
-        "sample_size": 20
+        "avg_return_pct": 0.23,
+        "win_rate_pct": 66.7,
+        "sample_size": 21
       }
     }
   },
@@ -30,39 +30,39 @@
     "signal": "WII < 30 (Whales Verkaufen)",
     "returns": {
       "3d": {
-        "avg_return_pct": -1.17,
+        "avg_return_pct": -1.13,
         "decline_rate_pct": 60.9,
         "sample_size": 23
       },
       "7d": {
-        "avg_return_pct": -1.42,
+        "avg_return_pct": -1.38,
         "decline_rate_pct": 60.9,
         "sample_size": 23
       },
       "14d": {
-        "avg_return_pct": -2.95,
+        "avg_return_pct": -2.9,
         "decline_rate_pct": 60.9,
         "sample_size": 23
       }
     }
   },
   "neutral": {
-    "count": 115,
+    "count": 116,
     "signal": "WII 30-70 (Neutral)",
     "returns": {
       "3d": {
-        "avg_return_pct": -0.33,
+        "avg_return_pct": -0.31,
         "sample_size": 115
       },
       "7d": {
-        "avg_return_pct": -0.8,
+        "avg_return_pct": -0.77,
         "sample_size": 115
       },
       "14d": {
-        "avg_return_pct": -1.32,
+        "avg_return_pct": -1.29,
         "sample_size": 115
       }
     }
   },
-  "marketing_message": "WII Accumulation: 62% Hitrate | WII Selling: 61% Accuracy | Overall: 61%"
+  "marketing_message": "WII Accumulation: 64% Hitrate | WII Selling: 61% Accuracy | Overall: 62%"
 }
